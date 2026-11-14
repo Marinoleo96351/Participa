@@ -1,0 +1,1 @@
+-- Migração base, intencionalmente vazia (linha 1 do plano de desenvolvimento).

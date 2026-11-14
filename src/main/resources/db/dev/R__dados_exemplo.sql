@@ -1,0 +1,2 @@
+-- Dados de exemplo para o perfil local, intencionalmente vazio por ora
+-- (preenchido na branch feature/base-acesso-api, linha 4 do plano).
