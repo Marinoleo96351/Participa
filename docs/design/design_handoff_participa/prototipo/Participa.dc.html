@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/nocturne-23407bbb-0ee3-4141-82c4-7ca94df576f8/styles.css">
+  <script src="_ds/nocturne-23407bbb-0ee3-4141-82c4-7ca94df576f8/_ds_bundle.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <style>
+    body { margin: 0; background: var(--color-bg); }
+    a { color: var(--color-accent); } a:hover { color: var(--color-accent-300); }
+    input[type=checkbox] { accent-color: var(--color-accent); }
+    @media print { [data-noprint] { display: none !important; } }
+  </style>
+</helmet>
+<div style="width:{{ fw }};height:{{ fh }};margin:{{ fm }};border-radius:{{ fr }};box-shadow:{{ fs }};transform:{{ ft }};overflow:auto;position:relative;min-height:{{ fmin }};background:radial-gradient(1200px 500px at 0% -10%, var(--color-accent-900), transparent 70%), var(--color-bg);">
+
+  <header data-noprint="1" style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-6);flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:var(--space-3);margin-right:auto;">
+      <span style="width:28px;height:28px;border-radius:var(--radius-md);box-shadow:inset 0 0 0 1.5px var(--color-accent);display:grid;place-items:center;color:var(--color-accent);font-size:16px;"><i class="ph ph-chats-circle"></i></span>
+      <span style="font-weight:500;font-size:17px;letter-spacing:-0.01em;">Participa</span>
+      <span class="tag tag-neutral">Estruturas de Dados · ES41</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;">
+      <span style="font-size:11px;color:var(--color-neutral-400);">Ver como</span>
+      <div class="seg" role="radiogroup" aria-label="Perfil do protótipo">
+        <label class="seg-opt"><input type="radio" name="perfil" checked="{{ isEst }}" onChange="{{ toEst }}">Estudante</label>
+        <label class="seg-opt"><input type="radio" name="perfil" checked="{{ isProf }}" onChange="{{ toProf }}">Professor</label>
+        <label class="seg-opt"><input type="radio" name="perfil" checked="{{ isMon }}" onChange="{{ toMon }}">Monitor</label>
+      </div>
+      <button class="btn btn-secondary" onClick="{{ toggleOnline }}" aria-label="Alternar conexão simulada" style="gap:8px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:{{ netDot }};"></span>{{ netLabel }}
+      </button>
+    </div>
+  </header>
+
+  <div style="display:flex;flex-direction:{{ layoutDir }};gap:var(--space-6);padding:0 var(--space-6) var(--space-8);align-items:flex-start;">
+
+    <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+      <nav data-noprint="1" aria-label="Navegação principal" style="display:flex;flex-direction:{{ navDir }};gap:var(--space-1);flex:none;width:{{ navW }};overflow-x:auto;position:sticky;top:0;padding-top:var(--space-2);">
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+          <button class="btn" onClick="{{ n.go }}" aria-current="{{ n.current }}" style="justify-content:flex-start;gap:10px;padding:8px 10px;white-space:nowrap;color:{{ n.color }};background:{{ n.bg }};font-size:14px;">
+            <i class="{{ n.icon }}" style="font-size:17px;"></i><span style="flex:1;text-align:left;">{{ n.label }}</span>
+            <sc-if value="{{ n.hasBadge }}"><span class="tag tag-accent" style="padding:1px 7px;">{{ n.badge }}</span></sc-if>
+          </button>
+        </sc-for>
+        <sc-if value="{{ isEst }}">
+          <button class="btn" onClick="{{ logout }}" style="justify-content:flex-start;gap:10px;padding:8px 10px;color:var(--color-neutral-400);font-size:14px;white-space:nowrap;"><i class="ph ph-sign-out" style="font-size:17px;"></i>Sair</button>
+        </sc-if>
+      </nav>
+    </sc-if>
+
+    <main style="flex:1;min-width:0;width:100%;max-width:{{ mainMax }};">
+
+      <!-- LOGIN / CADASTRO -->
+      <sc-if value="{{ sLogin }}">
+        <section data-screen-label="Login" style="max-width:400px;padding-top:var(--space-8);display:flex;flex-direction:column;gap:var(--space-6);">
+          <div>
+            <h6 style="color:var(--color-accent);">Base de acesso</h6>
+            <h2 style="margin:0;">Participe da aula sem se expor.</h2>
+            <p class="text-muted" style="margin-top:var(--space-3);">Funciona no navegador do celular ou do computador. Nada para instalar.</p>
+          </div>
+          <div class="seg" role="tablist" style="align-self:flex-start;">
+            <label class="seg-opt"><input type="radio" name="auth" checked="{{ authEntrar }}" onChange="{{ toEntrarTab }}">Entrar</label>
+            <label class="seg-opt"><input type="radio" name="auth" checked="{{ authCad }}" onChange="{{ toCadTab }}">Criar conta</label>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+            <sc-if value="{{ authCad }}">
+              <div class="field"><label for="f-nome">Nome completo</label><input id="f-nome" class="input" value="Leonardo Marino"></div>
+            </sc-if>
+            <div class="field"><label for="f-email">E-mail institucional</label><input id="f-email" class="input" type="email" value="leonardo@alunos.utfpr.edu.br"></div>
+            <div class="field"><label for="f-senha">Senha</label><input id="f-senha" class="input" type="password" value="senhasegura"></div>
+            <sc-if value="{{ authCad }}">
+              <div class="field"><label>Perfil</label>
+                <div class="seg">
+                  <label class="seg-opt"><input type="radio" name="perf" defaultChecked="{{ true }}">Estudante</label>
+                  <label class="seg-opt"><input type="radio" name="perf">Professor</label>
+                </div>
+              </div>
+            </sc-if>
+            <button class="btn btn-primary btn-block" onClick="{{ doLogin }}" style="min-height:44px;">{{ authCta }}</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- TERMO -->
+      <sc-if value="{{ sTermo }}">
+        <section data-screen-label="Termo de uso e privacidade" style="max-width:620px;padding-top:var(--space-6);display:flex;flex-direction:column;gap:var(--space-6);">
+          <div>
+            <h6 style="color:var(--color-accent);">Primeiro acesso · 1 de 2</h6>
+            <h2 style="margin:0;">Termo de uso e privacidade</h2>
+            <p class="text-muted" style="margin-top:var(--space-3);">Leia antes de continuar. Sem o aceite, a aplicação não fica disponível.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+            <div style="display:grid;grid-template-columns:28px 1fr;gap:var(--space-3);"><i class="ph ph-database" style="font-size:20px;color:var(--color-accent);"></i><div><div style="font-weight:500;">O que guardamos</div><div class="text-muted" style="font-size:14px;">Nome, e-mail institucional, suas dúvidas, apoios e respostas ao termômetro.</div></div></div>
+            <div style="display:grid;grid-template-columns:28px 1fr;gap:var(--space-3);"><i class="ph ph-mask-happy" style="font-size:20px;color:var(--color-accent);"></i><div><div style="font-weight:500;">Como funciona o anonimato</div><div class="text-muted" style="font-size:14px;">Em dúvida anônima, nenhuma tela mostra seu nome, e-mail ou RA, nem ao professor. O autor fica registrado no banco de dados para você ver seu histórico, não apoiar duas vezes e excluir suas contribuições. Quem administra o banco consegue vê-lo.</div></div></div>
+            <div style="display:grid;grid-template-columns:28px 1fr;gap:var(--space-3);"><i class="ph ph-chart-bar" style="font-size:20px;color:var(--color-accent);"></i><div><div style="font-weight:500;">Sem ranques</div><div class="text-muted" style="font-size:14px;">O professor vê apenas números da turma inteira. Ninguém vê quantas vezes você participou.</div></div></div>
+            <div style="display:grid;grid-template-columns:28px 1fr;gap:var(--space-3);"><i class="ph ph-trash" style="font-size:20px;color:var(--color-accent);"></i><div><div style="font-weight:500;">Por quanto tempo</div><div class="text-muted" style="font-size:14px;">No fim do semestre (12/12/2026), dúvidas, apoios e respostas são apagados e ficam só os totais. Você pode excluir suas contribuições antes, em Meu histórico.</div></div></div>
+          </div>
+          <label style="display:flex;gap:var(--space-3);align-items:center;font-size:14px;cursor:pointer;"><input type="checkbox" checked="{{ termoLido }}" onChange="{{ toggleTermoLido }}" style="width:18px;height:18px;">Li e entendi o termo</label>
+          <div style="display:flex;gap:var(--space-3);">
+            <button class="btn btn-primary" disabled="{{ termoBloq }}" onClick="{{ aceitar }}" style="min-height:44px;padding-inline:22px;">Aceito</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- ORIENTAÇÃO -->
+      <sc-if value="{{ sOrient }}">
+        <section data-screen-label="Orientação" style="max-width:560px;padding-top:var(--space-6);display:flex;flex-direction:column;gap:var(--space-6);">
+          <div style="display:flex;align-items:center;gap:var(--space-3);">
+            <h6 style="color:var(--color-accent);margin:0;">Como funciona · {{ onbNum }} de 3</h6>
+            <div style="display:flex;gap:6px;margin-left:auto;">
+              <sc-for list="{{ onbDots }}" as="d" hint-placeholder-count="3"><span style="width:22px;height:3px;border-radius:2px;background:{{ d.bg }};"></span></sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ onb0 }}">
+            <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+              <i class="ph ph-paper-plane-tilt" style="font-size:36px;color:var(--color-accent);"></i>
+              <h2 style="margin:0;">Mande sua dúvida na hora em que ela surgir.</h2>
+              <p class="text-muted" style="font-size:16px;">Escreva até 500 caracteres. Ela aparece na lista da aula em até 3 segundos. Se um colega já perguntou o que você queria, toque em Apoiar.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ onb1 }}">
+            <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+              <i class="ph ph-mask-happy" style="font-size:36px;color:var(--color-accent);"></i>
+              <h2 style="margin:0;">Anônima por padrão.</h2>
+              <p class="text-muted" style="font-size:16px;">A opção “Enviar como anônimo” já vem marcada. Acima do botão de envio, um aviso diz sempre como a dúvida vai sair: anônima ou com seu nome. Você pode mudar até enviar.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ onb2 }}">
+            <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+              <i class="ph ph-eye" style="font-size:36px;color:var(--color-accent);"></i>
+              <h2 style="margin:0;">Quem vê o quê.</h2>
+              <table class="table">
+                <thead><tr><th>Informação</th><th>Quem vê</th></tr></thead>
+                <tbody>
+                  <tr><td>Seu nome numa dúvida anônima</td><td>Ninguém</td></tr>
+                  <tr><td>Seu nome numa dúvida identificada</td><td>Turma e professor</td></tr>
+                  <tr><td>Quem apoiou uma dúvida</td><td>Ninguém, só o total</td></tr>
+                  <tr><td>Sua resposta ao termômetro</td><td>Ninguém, professor vê percentuais</td></tr>
+                  <tr><td>Seu histórico de participação</td><td>Só você</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </sc-if>
+          <div style="display:flex;gap:var(--space-3);align-items:center;">
+            <button class="btn btn-primary" onClick="{{ onbNext }}" style="min-height:44px;padding-inline:22px;">{{ onbCta }}</button>
+            <sc-if value="{{ onbHasBack }}"><button class="btn btn-secondary" onClick="{{ onbBack }}" style="min-height:44px;">Voltar</button></sc-if>
+            <button class="btn btn-ghost" onClick="{{ onbSkip }}" style="margin-left:auto;min-height:44px;">Pular</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- ENTRAR NA TURMA -->
+      <sc-if value="{{ sEntrar }}">
+        <section data-screen-label="Entrar na turma" style="max-width:440px;padding-top:var(--space-6);display:flex;flex-direction:column;gap:var(--space-6);">
+          <div>
+            <h6 style="color:var(--color-accent);">Entrar na turma</h6>
+            <h2 style="margin:0;">Digite o código que o professor mostrou.</h2>
+            <p class="text-muted" style="margin-top:var(--space-3);">São 6 letras e números. Também dá para abrir o endereço da tela do professor, como participa.app/entrar?codigo=K7M2QX.</p>
+          </div>
+          <div class="field">
+            <label for="f-cod">Código da turma</label>
+            <input id="f-cod" class="input" value="{{ codigo }}" onChange="{{ onCodigo }}" maxLength="6" autoComplete="off" aria-describedby="cod-msg" placeholder="K7M2QX" style="font-size:28px;letter-spacing:0.3em;text-transform:uppercase;min-height:56px;font-variant-numeric:tabular-nums;">
+            <div id="cod-msg" aria-live="polite" style="font-size:13px;margin-top:6px;color:var(--color-accent-300);">{{ codigoMsg }}</div>
+          </div>
+          <button class="btn btn-primary btn-block" onClick="{{ entrarTurma }}" style="min-height:44px;">Entrar na aula</button>
+        </section>
+      </sc-if>
+
+      <!-- AULA · ESTUDANTE -->
+      <sc-if value="{{ sAula }}">
+        <section data-screen-label="Aula do estudante" style="display:flex;flex-direction:column;gap:var(--space-6);">
+          <div style="display:flex;gap:var(--space-4);align-items:flex-end;flex-wrap:wrap;">
+            <div style="margin-right:auto;">
+              <h6 class="text-muted">Aula 12 · 04/11</h6>
+              <h3 style="margin:0;">Árvores AVL</h3>
+            </div>
+            <span class="tag tag-outline">{{ aulaTag }}</span>
+          </div>
+
+          <sc-if value="{{ offline }}">
+            <div role="status" style="display:flex;gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);font-size:14px;"><i class="ph ph-wifi-slash" style="font-size:18px;color:var(--color-accent);"></i>Sem conexão. Dúvidas enviadas ficam salvas neste aparelho e seguem quando a conexão voltar.</div>
+          </sc-if>
+
+          <sc-if value="{{ termoEstudante }}">
+            <div class="card elev-md" role="region" aria-label="Termômetro de compreensão" style="padding:var(--space-4);gap:var(--space-4);border-left:0;background:linear-gradient(120deg, var(--color-accent-900), var(--color-surface) 60%);">
+              <div style="display:flex;align-items:center;gap:var(--space-3);">
+                <i class="ph ph-thermometer-simple" style="font-size:20px;color:var(--color-accent);"></i>
+                <span class="card-title" style="margin-right:auto;">O professor quer saber: você está acompanhando?</span>
+                <span aria-live="off" style="font-variant-numeric:tabular-nums;font-size:20px;color:var(--color-accent-300);">{{ termoTempo }}</span>
+              </div>
+              <sc-if value="{{ termoPodeResponder }}">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:var(--space-3);">
+                  <button class="btn btn-secondary" onClick="{{ respE }}" style="min-height:48px;gap:8px;"><i class="ph ph-check-circle"></i>Entendi</button>
+                  <button class="btn btn-secondary" onClick="{{ respP }}" style="min-height:48px;gap:8px;"><i class="ph ph-circle-half"></i>Entendi em parte</button>
+                  <button class="btn btn-secondary" onClick="{{ respN }}" style="min-height:48px;gap:8px;"><i class="ph ph-x-circle"></i>Não entendi</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ termoRespondido }}">
+                <div role="status" style="font-size:14px;">Resposta registrada: <strong style="font-weight:500;color:var(--color-accent-300);">{{ minhaResp }}</strong>. O professor vê só os percentuais da turma.</div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <div class="card elev-sm" style="padding:var(--space-4);gap:var(--space-4);">
+            <label for="f-duvida" class="card-title">Sua dúvida</label>
+            <sc-if value="{{ envioFechado }}">
+              <div style="display:flex;gap:var(--space-3);align-items:center;font-size:14px;color:var(--color-neutral-300);"><i class="ph ph-lock-simple" style="font-size:18px;"></i>O envio de dúvidas desta aula terminou em {{ prazoLabel }}.</div>
+            </sc-if>
+            <sc-if value="{{ envioAberto }}">
+              <sc-if value="{{ isPos }}"><div style="font-size:14px;color:var(--color-accent-300);">A aula terminou. Você pode enviar dúvidas até {{ prazoLabel }}.</div></sc-if>
+              <textarea id="f-duvida" class="input" value="{{ draft }}" onChange="{{ onDraft }}" maxLength="500" placeholder="Escreva aqui. Ex.: por que a rotação dupla é necessária?" aria-describedby="contador" style="min-height:96px;font-size:15px;"></textarea>
+              <div style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;">
+                <label style="display:flex;gap:var(--space-3);align-items:center;font-size:14px;cursor:pointer;min-height:44px;"><input type="checkbox" checked="{{ anon }}" onChange="{{ toggleAnon }}" style="width:18px;height:18px;">Enviar como anônimo</label>
+                <span id="contador" style="margin-left:auto;font-size:12px;font-variant-numeric:tabular-nums;color:var(--color-neutral-400);">{{ contador }}</span>
+              </div>
+              <div aria-live="polite" style="display:flex;gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-accent-900);color:var(--color-accent-100);font-size:14px;">
+                <i class="{{ avisoIcon }}" style="font-size:20px;"></i>
+                <span>Sua dúvida será enviada como <strong style="font-weight:600;letter-spacing:0.04em;">{{ avisoModo }}</strong>. {{ avisoTexto }}</span>
+              </div>
+              <button class="btn btn-primary" disabled="{{ envioBloq }}" onClick="{{ enviar }}" style="align-self:flex-start;min-height:44px;padding-inline:22px;gap:8px;"><i class="ph ph-paper-plane-tilt"></i>Enviar dúvida</button>
+            </sc-if>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+            <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap;">
+              <h4 style="margin:0;margin-right:auto;">Dúvidas da aula</h4>
+              <span class="text-muted" style="font-size:12px;">Mais apoiadas primeiro · respondidas no fim · atualiza a cada 3 s</span>
+            </div>
+            <div aria-live="polite" style="display:flex;flex-direction:column;">
+              <sc-for list="{{ listaEst }}" as="d" hint-placeholder-count="5">
+                <article style="display:flex;gap:var(--space-4);align-items:flex-start;padding:var(--space-4) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;opacity:{{ d.op }};">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-2);">
+                    <p style="margin:0;font-size:15px;text-wrap:pretty;">{{ d.texto }}</p>
+                    <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;font-size:12px;color:var(--color-neutral-400);">
+                      <sc-if value="{{ d.mine }}"><span class="tag tag-accent">{{ d.autorLabel }}</span></sc-if>
+                      <sc-if value="{{ d.notMine }}"><span>{{ d.autorLabel }}</span></sc-if>
+                      <span>· {{ d.hora }}</span>
+                      <sc-if value="{{ d.respondida }}"><span class="tag tag-neutral">Respondida</span></sc-if>
+                      <sc-if value="{{ d.pos }}"><span class="tag tag-neutral">Pós-aula</span></sc-if>
+                      <sc-if value="{{ d.fila }}"><span class="tag tag-outline">Aguardando conexão</span></sc-if>
+                      <sc-if value="{{ d.pendente }}"><span class="tag tag-outline">Em revisão pela moderação</span></sc-if>
+                    </div>
+                  </div>
+                  <sc-if value="{{ d.apoiada }}">
+                    <button class="btn btn-primary" onClick="{{ d.toggle }}" aria-pressed="true" aria-label="{{ d.aria }}" style="flex:none;min-width:84px;min-height:44px;gap:6px;background:color-mix(in srgb, var(--color-accent) 14%, transparent);"><i class="ph-fill ph-hand-heart"></i>{{ d.apoios }}</button>
+                  </sc-if>
+                  <sc-if value="{{ d.naoApoiada }}">
+                    <button class="btn btn-secondary" onClick="{{ d.toggle }}" disabled="{{ d.bloq }}" aria-pressed="false" aria-label="{{ d.aria }}" style="flex:none;min-width:84px;min-height:44px;gap:6px;"><i class="ph ph-hand-heart"></i>{{ d.apoios }}</button>
+                  </sc-if>
+                </article>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- MEU HISTÓRICO -->
+      <sc-if value="{{ sHist }}">
+        <section data-screen-label="Meu histórico" style="display:flex;flex-direction:column;gap:var(--space-6);max-width:720px;">
+          <div>
+            <h6 class="text-muted">Só você vê esta tela</h6>
+            <h3 style="margin:0;">Meu histórico</h3>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--space-4);">
+            <div class="card elev-sm" style="padding:var(--space-4);"><span class="card-kicker">Dúvidas enviadas</span><span style="font-size:32px;font-weight:500;">{{ histDuv }}</span></div>
+            <div class="card elev-sm" style="padding:var(--space-4);"><span class="card-kicker">Apoios dados</span><span style="font-size:32px;font-weight:500;">{{ histApoios }}</span></div>
+            <div class="card elev-sm" style="padding:var(--space-4);"><span class="card-kicker">Termômetros respondidos</span><span style="font-size:32px;font-weight:500;">{{ histTermo }}</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;">
+            <sc-for list="{{ minhas }}" as="d" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2);padding:var(--space-4) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;">
+                <p style="margin:0;">{{ d.texto }}</p>
+                <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;font-size:12px;color:var(--color-neutral-400);"><span class="tag tag-accent">{{ d.autorLabel }}</span><span>Aula 12 · {{ d.hora }} · {{ d.apoios }} apoios</span></div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ semMinhas }}"><p class="text-muted">Nenhuma contribuição registrada.</p></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);">
+            <div class="card-title">Excluir minhas contribuições</div>
+            <p class="text-muted" style="margin:0;font-size:14px;">Apaga suas dúvidas, apoios e respostas ao termômetro desta turma. Os totais da turma diminuem junto. Não dá para desfazer.</p>
+            <button class="btn btn-secondary" onClick="{{ abrirExcluir }}" style="align-self:flex-start;min-height:44px;gap:8px;"><i class="ph ph-trash"></i>Excluir minhas contribuições</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- PROFESSOR · TURMAS -->
+      <sc-if value="{{ sTurmas }}">
+        <section data-screen-label="Turmas do professor" style="display:flex;flex-direction:column;gap:var(--space-6);">
+          <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap;">
+            <div style="margin-right:auto;"><h6 class="text-muted">Professor</h6><h3 style="margin:0;">Turmas e aulas</h3></div>
+            <button class="btn btn-primary" onClick="{{ abrirCriarTurma }}" style="gap:8px;"><i class="ph ph-plus"></i>Criar turma</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-4);">
+            <sc-for list="{{ turmas }}" as="t" hint-placeholder-count="2">
+              <div class="card elev-sm" style="padding:var(--space-4);gap:var(--space-3);">
+                <span class="card-kicker">{{ t.alunos }} estudantes · até {{ t.fim }}</span>
+                <span class="card-title">{{ t.nome }}</span>
+                <div style="display:flex;align-items:baseline;gap:var(--space-3);margin-top:var(--space-2);">
+                  <span style="font-size:11px;color:var(--color-neutral-400);">Código</span>
+                  <span style="font-size:26px;letter-spacing:0.18em;font-variant-numeric:tabular-nums;color:var(--color-accent-300);">{{ t.codigo }}</span>
+                </div>
+                <span class="card-meta">participa.app/entrar?codigo={{ t.codigo }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+            <h4 style="margin:0;">Aulas · Estruturas de Dados</h4>
+            <table class="table">
+              <thead><tr><th>Aula</th><th>Data</th><th>Situação</th><th style="text-align:right;">Ação</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Aula 12 · Árvores AVL</td><td>04/11</td>
+                  <td><span class="tag tag-accent">{{ aulaTag }}</span></td>
+                  <td style="text-align:right;">
+                    <sc-if value="{{ isAberta }}"><button class="btn btn-secondary" onClick="{{ abrirEncerrar }}">Encerrar aula</button></sc-if>
+                    <sc-if value="{{ isPos }}"><button class="btn btn-secondary" onClick="{{ fecharPrazo }}" title="Simula o fim do prazo pós-aula">Simular fim do prazo</button></sc-if>
+                    <sc-if value="{{ isFechada }}"><button class="btn btn-ghost" onClick="{{ goResumo }}">Ver resumo</button></sc-if>
+                  </td>
+                </tr>
+                <tr><td>Aula 11 · Árvores binárias de busca</td><td>30/10</td><td><span class="tag tag-neutral">Encerrada</span></td><td style="text-align:right;"><span class="text-muted" style="font-size:13px;">Resumo enviado em 01/11</span></td></tr>
+                <tr><td>Aula 10 · Filas de prioridade</td><td>28/10</td><td><span class="tag tag-neutral">Encerrada</span></td><td style="text-align:right;"><span class="text-muted" style="font-size:13px;">Resumo enviado em 30/10</span></td></tr>
+              </tbody>
+            </table>
+            <button class="btn btn-ghost" disabled="{{ isAberta }}" onClick="{{ abrirAula }}" style="align-self:flex-start;gap:8px;"><i class="ph ph-play"></i>Abrir nova aula</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- PROFESSOR · AULA AO VIVO -->
+      <sc-if value="{{ sAoVivo }}">
+        <section data-screen-label="Aula ao vivo do professor" style="display:flex;flex-direction:column;gap:var(--space-6);">
+          <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap;">
+            <div style="margin-right:auto;"><h6 class="text-muted">Aula 12 · 04/11 · código K7M2QX</h6><h3 style="margin:0;">Árvores AVL</h3></div>
+            <span class="tag tag-outline">{{ aulaTag }}</span>
+            <sc-if value="{{ isAberta }}"><button class="btn btn-secondary" onClick="{{ abrirEncerrar }}">Encerrar aula</button></sc-if>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:var(--space-4);">
+            <div class="card elev-sm" style="padding:var(--space-4);gap:var(--space-4);">
+              <div style="display:flex;align-items:center;gap:var(--space-3);">
+                <i class="ph ph-thermometer-simple" style="font-size:20px;color:var(--color-accent);"></i>
+                <span class="card-title" style="margin-right:auto;">Termômetro de compreensão</span>
+                <sc-if value="{{ termoAtivo }}"><span style="font-variant-numeric:tabular-nums;font-size:20px;color:var(--color-accent-300);">{{ termoTempo }}</span></sc-if>
+              </div>
+              <sc-if value="{{ termoNunca }}">
+                <p class="text-muted" style="margin:0;font-size:14px;">Pergunte à turma, em um toque, se o conteúdo está claro. As respostas são anônimas e o resultado sai em percentuais.</p>
+              </sc-if>
+              <sc-if value="{{ termoTemDados }}">
+                <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+                  <sc-for list="{{ barras }}" as="b" hint-placeholder-count="3">
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                      <div style="display:flex;justify-content:space-between;font-size:14px;"><span>{{ b.label }}</span><span style="font-variant-numeric:tabular-nums;font-weight:500;">{{ b.txt }}</span></div>
+                      <div style="height:12px;border-radius:6px;background:var(--color-neutral-900);overflow:hidden;"><div style="height:100%;width:{{ b.w }};background:{{ b.fill }};border-radius:6px;transition:width .4s;"></div></div>
+                    </div>
+                  </sc-for>
+                  <span class="card-meta">{{ termoResumo }}</span>
+                </div>
+              </sc-if>
+              <div style="display:flex;gap:var(--space-3);align-items:flex-end;flex-wrap:wrap;">
+                <sc-if value="{{ termoNaoAtivo }}">
+                  <div class="field" style="width:120px;"><label for="f-dur">Duração (s)</label><input id="f-dur" class="input" type="number" min="15" max="600" step="15" value="{{ termoDur }}" onChange="{{ onDur }}"></div>
+                  <button class="btn btn-primary" disabled="{{ termoBloq2 }}" onClick="{{ abrirTermo }}" style="min-height:36px;gap:8px;"><i class="ph ph-play"></i>Abrir termômetro</button>
+                </sc-if>
+                <sc-if value="{{ termoAtivo }}"><button class="btn btn-secondary" onClick="{{ fecharTermo }}">Encerrar agora</button></sc-if>
+                <sc-if value="{{ termoTemDados }}"><button class="btn btn-ghost" onClick="{{ abrirProj }}" style="gap:6px;margin-left:auto;"><i class="ph ph-projector-screen"></i>Modo projeção</button></sc-if>
+              </div>
+            </div>
+            <div class="card elev-sm" style="padding:var(--space-4);gap:var(--space-4);">
+              <span class="card-title">Participação da turma</span>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3);">
+                <div><div style="font-size:30px;font-weight:500;">{{ totDuv }}</div><div class="text-muted" style="font-size:12px;">dúvidas</div></div>
+                <div><div style="font-size:30px;font-weight:500;">{{ totApoios }}</div><div class="text-muted" style="font-size:12px;">apoios</div></div>
+                <div><div style="font-size:30px;font-weight:500;">{{ totResp }}</div><div class="text-muted" style="font-size:12px;">respostas ao termômetro</div></div>
+              </div>
+              <span class="card-meta"><i class="ph ph-lock-simple"></i>Números da turma inteira. Nenhum dado por estudante.</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+            <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap;"><h4 style="margin:0;margin-right:auto;">Dúvidas · {{ totDuv }}</h4><button class="btn btn-ghost" onClick="{{ goPainel }}" style="gap:6px;">Organizar por tema<i class="ph ph-arrow-right"></i></button></div>
+            <div aria-live="polite" style="display:flex;flex-direction:column;">
+              <sc-for list="{{ listaProf }}" as="d" hint-placeholder-count="5">
+                <article style="display:flex;gap:var(--space-4);align-items:center;padding:var(--space-3) 0;background:linear-gradient(to right, transparent, var(--color-divider) 48px, var(--color-divider) calc(100% - 48px), transparent) no-repeat bottom / 100% 1px;opacity:{{ d.op }};">
+                  <div style="flex:none;width:44px;text-align:center;"><div style="font-size:20px;font-weight:500;">{{ d.apoios }}</div><div style="font-size:10px;color:var(--color-neutral-400);">apoios</div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+                    <p style="margin:0;text-wrap:pretty;">{{ d.texto }}</p>
+                    <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center;font-size:12px;color:var(--color-neutral-400);"><span>{{ d.autorLabel }} · {{ d.hora }}</span><sc-if value="{{ d.temTema }}"><span class="tag tag-neutral">{{ d.tema }}</span></sc-if><sc-if value="{{ d.pos }}"><span class="tag tag-outline">Pós-aula</span></sc-if></div>
+                  </div>
+                  <sc-if value="{{ d.respondida }}"><button class="btn btn-ghost" onClick="{{ d.toggleResp }}" style="flex:none;gap:6px;color:var(--color-neutral-300);"><i class="ph ph-check"></i>Respondida</button></sc-if>
+                  <sc-if value="{{ d.naoRespondida }}"><button class="btn btn-secondary" onClick="{{ d.toggleResp }}" style="flex:none;">Marcar respondida</button></sc-if>
+                </article>
+              </sc-for>
+            </div>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- PROFESSOR · PAINEL POR TEMA -->
+      <sc-if value="{{ sPainel }}">
+        <section data-screen-label="Painel por tema" style="display:flex;flex-direction:column;gap:var(--space-6);">
+          <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap;">
+            <div style="margin-right:auto;"><h6 class="text-muted">Aula 12 · Árvores AVL</h6><h3 style="margin:0;">Painel por tema</h3></div>
+            <div style="display:flex;gap:var(--space-2);align-items:flex-end;">
+              <div class="field"><label for="f-tema">Novo tema</label><input id="f-tema" class="input" value="{{ novoTema }}" onChange="{{ onNovoTema }}" placeholder="Ex.: Remoção" style="width:180px;"></div>
+              <button class="btn btn-primary" onClick="{{ addTema }}" style="min-height:36px;">Criar</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:var(--space-4);align-items:start;">
+            <sc-for list="{{ colunas }}" as="c" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-3);border-radius:var(--radius-md);background:color-mix(in srgb, var(--color-surface) 55%, transparent);box-shadow:var(--shadow-sm);">
+                <div style="display:flex;flex-direction:column;gap:2px;padding:0 var(--space-1);">
+                  <span style="font-weight:500;font-size:15px;">{{ c.nome }}</span>
+                  <span style="font-size:12px;color:var(--color-neutral-400);">{{ c.resumo }}</span>
+                </div>
+                <sc-for list="{{ c.items }}" as="d" hint-placeholder-count="2">
+                  <div class="card" style="padding:var(--space-3);gap:var(--space-3);">
+                    <p style="margin:0;font-size:14px;text-wrap:pretty;">{{ d.texto }}</p>
+                    <div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;font-size:12px;color:var(--color-neutral-400);"><i class="ph ph-hand-heart"></i>{{ d.apoios }}<sc-if value="{{ d.pos }}"><span class="tag tag-outline">Pós-aula</span></sc-if><sc-if value="{{ d.respondida }}"><span class="tag tag-neutral">Respondida</span></sc-if></div>
+                    <select class="input" value="{{ d.tema }}" onChange="{{ d.mover }}" aria-label="{{ d.aria }}" style="min-height:32px;font-size:13px;">
+                      <sc-for list="{{ temaOpts }}" as="o"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+                    </select>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ c.vazio }}"><span style="font-size:13px;color:var(--color-neutral-500);padding:var(--space-2);">Nenhuma dúvida neste tema.</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- MODERAÇÃO -->
+      <sc-if value="{{ sMod }}">
+        <section data-screen-label="Moderação" style="display:flex;flex-direction:column;gap:var(--space-6);max-width:860px;">
+          <div>
+            <h6 class="text-muted">{{ modPerfil }}</h6>
+            <h3 style="margin:0;">Moderação do canal anônimo</h3>
+            <p class="text-muted" style="margin:var(--space-2) 0 0;font-size:14px;">Dúvidas com termos da lista ficam retidas aqui e não aparecem para a turma. O autor de dúvida anônima nunca é exibido.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+            <h4 style="margin:0;">Retidas pelo filtro · {{ pendCount }}</h4>
+            <sc-for list="{{ pendentes }}" as="d" hint-placeholder-count="2">
+              <div class="card elev-sm" style="padding:var(--space-4);gap:var(--space-3);">
+                <p style="margin:0;">{{ d.texto }}</p>
+                <div style="display:flex;gap:var(--space-2);align-items:center;flex-wrap:wrap;font-size:12px;color:var(--color-neutral-400);"><span>{{ d.autorLabel }} · {{ d.hora }}</span><span class="tag tag-accent">Termo retido: {{ d.termo }}</span></div>
+                <div style="display:flex;gap:var(--space-3);">
+                  <button class="btn btn-primary" onClick="{{ d.aprovar }}" style="gap:6px;"><i class="ph ph-check"></i>Publicar</button>
+                  <button class="btn btn-secondary" onClick="{{ d.ocultar }}" style="gap:6px;"><i class="ph ph-eye-slash"></i>Ocultar</button>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ semPend }}"><p class="text-muted" style="margin:0;">Fila vazia. Nada aguardando revisão.</p></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2);">
+            <h4 style="margin:0;">Publicadas</h4>
+            <table class="table">
+              <thead><tr><th>Dúvida</th><th>Autor</th><th style="text-align:right;">Ação</th></tr></thead>
+              <tbody>
+                <sc-for list="{{ publicadas }}" as="d" hint-placeholder-count="4">
+                  <tr><td style="max-width:420px;">{{ d.texto }}</td><td style="white-space:nowrap;color:var(--color-neutral-400);">{{ d.autorLabel }}</td><td style="text-align:right;"><button class="btn btn-ghost" onClick="{{ d.ocultar }}">Ocultar</button></td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <sc-if value="{{ temOcultas }}"><span class="text-muted" style="font-size:13px;">{{ ocultasLabel }}</span></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-3);">
+            <h4 style="margin:0;">Termos filtrados</h4>
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;">
+              <sc-for list="{{ termosList }}" as="t" hint-placeholder-count="3">
+                <span class="tag tag-neutral" style="gap:6px;padding-right:4px;">{{ t.t }}<button class="btn btn-ghost" onClick="{{ t.rm }}" aria-label="{{ t.aria }}" style="padding:0 4px;color:var(--color-neutral-300);"><i class="ph ph-x"></i></button></span>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:var(--space-2);align-items:flex-end;">
+              <div class="field"><label for="f-termo">Adicionar termo</label><input id="f-termo" class="input" value="{{ novoTermo }}" onChange="{{ onNovoTermo }}" style="width:200px;"></div>
+              <button class="btn btn-secondary" onClick="{{ addTermo }}" style="min-height:36px;">Adicionar</button>
+            </div>
+          </div>
+        </section>
+      </sc-if>
+
+      <!-- RESUMO -->
+      <sc-if value="{{ sResumo }}">
+        <section data-screen-label="Resumo da aula" style="display:flex;flex-direction:column;gap:var(--space-6);max-width:760px;">
+          <div style="display:flex;align-items:flex-end;gap:var(--space-4);flex-wrap:wrap;">
+            <div style="margin-right:auto;"><h6 class="text-muted">Resumo para a próxima aula</h6><h3 style="margin:0;">Aula 12 · Árvores AVL</h3></div>
+            <button data-noprint="1" class="btn btn-secondary" onClick="{{ imprimir }}" style="gap:8px;"><i class="ph ph-printer"></i>Imprimir</button>
+          </div>
+          <div style="display:flex;gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-accent-900);color:var(--color-accent-100);font-size:14px;"><i class="{{ resumoIcon }}" style="font-size:20px;"></i><span>{{ resumoStatus }}</span></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--space-4);">
+            <div><div style="font-size:30px;font-weight:500;">{{ totDuv }}</div><div class="text-muted" style="font-size:12px;">dúvidas</div></div>
+            <div><div style="font-size:30px;font-weight:500;">{{ totApoios }}</div><div class="text-muted" style="font-size:12px;">apoios</div></div>
+            <div><div style="font-size:30px;font-weight:500;">{{ posCount }}</div><div class="text-muted" style="font-size:12px;">enviadas após a aula</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-6);">
+            <sc-for list="{{ resumoTemas }}" as="c" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2);">
+                <div style="display:flex;align-items:baseline;gap:var(--space-3);"><h4 style="margin:0;">{{ c.nome }}</h4><span class="text-muted" style="font-size:13px;">{{ c.resumo }}</span></div>
+                <sc-for list="{{ c.items }}" as="d">
+                  <div style="display:grid;grid-template-columns:44px 1fr;gap:var(--space-3);padding:var(--space-2) 0;font-size:14px;"><span style="font-variant-numeric:tabular-nums;color:var(--color-accent-300);">{{ d.apoios }}</span><span>{{ d.texto }} <span style="color:var(--color-neutral-400);">{{ d.flags }}</span></span></div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:var(--space-4);">
+            <h4 style="margin:0;">Termômetros</h4>
+            <sc-for list="{{ resumoTermos }}" as="r" hint-placeholder-count="1">
+              <div style="display:flex;flex-direction:column;gap:var(--space-2);">
+                <span style="font-size:13px;color:var(--color-neutral-400);">{{ r.titulo }}</span>
+                <sc-for list="{{ r.barras }}" as="b">
+                  <div style="display:grid;grid-template-columns:140px 1fr 48px;gap:var(--space-3);align-items:center;font-size:14px;"><span>{{ b.label }}</span><div style="height:10px;border-radius:5px;background:var(--color-neutral-900);overflow:hidden;"><div style="height:100%;width:{{ b.w }};background:{{ b.fill }};"></div></div><span style="text-align:right;font-variant-numeric:tabular-nums;">{{ b.txt }}</span></div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+    </main>
+  </div>
+
+  <!-- MODO PROJEÇÃO -->
+  <sc-if value="{{ projecao }}">
+    <div role="dialog" aria-modal="true" aria-label="Resultado do termômetro em modo projeção" style="position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;gap:48px;padding:6vw;background:radial-gradient(900px 500px at 0% 0%, var(--color-accent-900), transparent 70%), var(--color-bg);overflow:auto;">
+      <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;">
+        <div style="margin-right:auto;"><div style="font-size:20px;color:var(--color-neutral-400);">Termômetro · Árvores AVL</div><div style="font-size:52px;font-weight:500;letter-spacing:-0.02em;line-height:1.1;">Como está a compreensão da turma?</div></div>
+        <div style="font-size:56px;font-variant-numeric:tabular-nums;color:var(--color-accent-300);">{{ termoTempoProj }}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:36px;">
+        <sc-for list="{{ barras }}" as="b" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:36px;"><span>{{ b.label }}</span><span style="font-weight:600;font-variant-numeric:tabular-nums;">{{ b.txt }}</span></div>
+            <div style="height:36px;border-radius:10px;background:var(--color-neutral-900);overflow:hidden;"><div style="height:100%;width:{{ b.w }};background:{{ b.fill }};transition:width .4s;"></div></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center;margin-top:auto;">
+        <span style="font-size:20px;color:var(--color-neutral-400);margin-right:auto;">{{ termoResumo }}</span>
+        <button class="btn btn-secondary" onClick="{{ fecharProj }}" style="font-size:16px;padding:10px 18px;">Sair do modo projeção (Esc)</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- DIÁLOGOS -->
+  <sc-if value="{{ dExcluir }}">
+    <div class="dialog-backdrop" style="z-index:40;">
+      <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dx-t">
+        <div id="dx-t" class="dialog-title">Excluir suas contribuições?</div>
+        <div class="dialog-body">{{ excluirTexto }} Os apoios e respostas também são removidos. Não dá para desfazer.</div>
+        <div class="dialog-actions"><button class="btn btn-secondary" onClick="{{ fecharDialog }}">Cancelar</button><button class="btn btn-primary" onClick="{{ confirmarExcluir }}">Excluir</button></div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ dEncerrar }}">
+    <div class="dialog-backdrop" style="z-index:40;">
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="de-t">
+        <div id="de-t" class="dialog-title">Encerrar a Aula 12</div>
+        <div class="dialog-body">Os estudantes ainda podem enviar dúvidas até o prazo abaixo. Elas aparecem marcadas como pós-aula. Quando o prazo terminar, o resumo é gerado e você recebe o aviso no e-mail institucional.</div>
+        <div class="field"><label>Prazo para dúvidas pós-aula</label>
+          <div class="seg">
+            <label class="seg-opt"><input type="radio" name="prazo" checked="{{ p24 }}" onChange="{{ setP24 }}">24 horas</label>
+            <label class="seg-opt"><input type="radio" name="prazo" checked="{{ p48 }}" onChange="{{ setP48 }}">48 horas</label>
+            <label class="seg-opt"><input type="radio" name="prazo" checked="{{ pProx }}" onChange="{{ setPProx }}">Até a próxima aula</label>
+          </div>
+          <div style="font-size:13px;margin-top:6px;color:var(--color-accent-300);">Até {{ prazoLabel }}</div>
+        </div>
+        <div class="dialog-actions"><button class="btn btn-secondary" onClick="{{ fecharDialog }}">Cancelar</button><button class="btn btn-primary" onClick="{{ encerrarAula }}">Encerrar aula</button></div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ dCriar }}">
+    <div class="dialog-backdrop" style="z-index:40;">
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dc-t">
+        <div id="dc-t" class="dialog-title">Criar turma</div>
+        <div class="field"><label for="f-tn">Nome da turma</label><input id="f-tn" class="input" value="{{ novaTurma }}" onChange="{{ onNovaTurma }}" placeholder="Ex.: Banco de Dados · ES44"></div>
+        <div class="field"><label for="f-fim">Fim do semestre</label><input id="f-fim" class="input" type="date" defaultValue="2026-12-12"></div>
+        <div class="dialog-body" style="font-size:13px;">Um código de 6 caracteres é gerado para os estudantes entrarem. No fim do semestre, os dados individuais são apagados e ficam só os totais.</div>
+        <div class="dialog-actions"><button class="btn btn-secondary" onClick="{{ fecharDialog }}">Cancelar</button><button class="btn btn-primary" onClick="{{ criarTurma }}">Criar turma</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}">
+    <div role="status" aria-live="polite" data-noprint="1" style="position:fixed;left:24px;bottom:24px;right:24px;max-width:440px;z-index:60;display:flex;gap:var(--space-3);align-items:center;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-md);font-size:14px;"><i class="ph ph-check-circle" style="font-size:18px;color:var(--color-accent);"></i>{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;dispositivo&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;desktop&quot;,&quot;celular&quot;],&quot;default&quot;:&quot;desktop&quot;,&quot;tsType&quot;:&quot;'desktop'|'celular'&quot;},&quot;inicio&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;aula-estudante&quot;,&quot;professor&quot;],&quot;default&quot;:&quot;login&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;aulaInicial&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;aberta&quot;,&quot;pos&quot;,&quot;fechada&quot;],&quot;default&quot;:&quot;aberta&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const PRAZOS = { '24': '05/11 às 23:59', '48': '06/11 às 23:59', prox: '10/11 às 18:59' };
+const mk = (o) => Object.assign({ anon: true, autor: null, mine: false, apoios: 0, apoiada: false, respondida: false, tema: '', status: 'PUBLICADA', pos: false, fila: false }, o);
+const D0 = [
+  mk({ id: 1, texto: 'Por que a rotação dupla é necessária no caso esquerda-direita? A simples não resolve?', apoios: 9, hora: '19:12', ord: 2, tema: 'Rotações' }),
+  mk({ id: 2, texto: 'Qual a complexidade da remoção na AVL comparada à árvore rubro-negra?', apoios: 6, hora: '19:20', ord: 4, tema: 'Complexidade' }),
+  mk({ id: 3, texto: 'O fator de balanceamento é recalculado em todos os ancestrais ou só no pai?', anon: false, autor: 'Mariana Costa', apoios: 6, hora: '19:15', ord: 3, tema: 'Balanceamento' }),
+  mk({ id: 4, texto: 'Como saber qual rotação aplicar só olhando os fatores?', mine: true, apoios: 4, hora: '19:24', ord: 5, tema: 'Rotações' }),
+  mk({ id: 5, texto: 'Pode refazer o exemplo da inserção do 15 a partir do segundo passo?', apoios: 3, hora: '19:31', ord: 6 }),
+  mk({ id: 6, texto: 'Na prova vamos precisar desenhar as rotações passo a passo?', apoios: 7, hora: '19:08', ord: 1, respondida: true }),
+  mk({ id: 7, texto: 'Altura de árvore vazia é -1 ou 0? Cada material usa um.', apoios: 2, hora: '19:40', ord: 7, tema: 'Balanceamento', apoiada: true }),
+  mk({ id: 8, texto: 'Que explicação porcaria, refaz tudo do começo', hora: '19:33', ord: 8, status: 'PENDENTE' }),
+  mk({ id: 9, texto: 'Não entendi as rotações, dá pra mostrar outro exemplo? Tô me sentindo um idiota.', anon: false, autor: 'Pedro Lima', hora: '19:36', ord: 9, status: 'PENDENTE' }),
+];
+const sortD = (a, b) => (a.respondida - b.respondida) || (b.apoios - a.apoios) || (a.ord - b.ord);
+const fmt = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+const FILLS = ['var(--color-accent-300)', 'var(--color-accent-600)', 'var(--color-neutral-500)'];
+const LABELS = ['Entendi', 'Entendi em parte', 'Não entendi'];
+const bars = (r) => { const t = r.e + r.p + r.n; return [r.e, r.p, r.n].map((v, i) => { const pct = t ? Math.round((v / t) * 100) : 0; return { label: LABELS[i], pct, w: pct + '%', txt: pct + '%', fill: FILLS[i] }; }); };
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    const ini = this.props.inicio ?? 'login';
+    this.state = {
+      role: ini === 'professor' ? 'professor' : 'estudante',
+      screen: ini === 'professor' ? 'aovivo' : ini === 'aula-estudante' ? 'aula' : 'login',
+      accepted: ini !== 'login', oriented: ini !== 'login', authTab: 'entrar', termoLido: false, onb: 0, helpMode: false,
+      anon: true, draft: '', online: true, duvidas: D0, nextId: 20, nextOrd: 20,
+      temas: ['Rotações', 'Balanceamento', 'Complexidade'], novoTema: '',
+      aula: this.props.aulaInicial ?? 'aberta', prazo: '48',
+      termo: { ativo: false, restante: 0, iniciado: false, resp: { e: 0, p: 0, n: 0 }, minha: null },
+      termoDur: 60, projecao: false, dialog: null, toast: null,
+      codigo: '', codigoMsg: '', termos: ['porcaria', 'idiota', 'lixo'], novoTermo: '',
+      turmas: [{ nome: 'Estruturas de Dados · ES41', codigo: 'K7M2QX', alunos: 32, fim: '12/12' }, { nome: 'Algoritmos · ES32', codigo: 'P4T9ZB', alunos: 28, fim: '12/12' }],
+      novaTurma: '', termoRespHist: 3,
+    };
+  }
+  componentDidMount() {
+    this.iv = setInterval(() => this.tick(), 1000);
+    this.kd = (e) => { if (e.key === 'Escape') this.setState({ projecao: false, dialog: null }); };
+    window.addEventListener('keydown', this.kd);
+  }
+  componentWillUnmount() { clearInterval(this.iv); window.removeEventListener('keydown', this.kd); clearTimeout(this.tt); }
+  tick() {
+    const t = this.state.termo;
+    if (!t.ativo) return;
+    const r = { ...t.resp };
+    const tot = r.e + r.p + r.n;
+    if (tot < 30 && Math.random() < 0.7) { const x = Math.random(); if (x < 0.5) r.e++; else if (x < 0.8) r.p++; else r.n++; }
+    const restante = t.restante - 1;
+    this.setState({ termo: { ...t, resp: r, restante, ativo: restante > 0 } });
+  }
+  say(msg) { clearTimeout(this.tt); this.setState({ toast: msg }); this.tt = setTimeout(() => this.setState({ toast: null }), 3800); }
+  upd(id, f) { this.setState((s) => ({ duvidas: s.duvidas.map((d) => (d.id === id ? { ...d, ...f(d) } : d)) })); }
+  go(screen) { this.setState({ screen }); }
+  setRole(role) {
+    const s = this.state;
+    const screen = role === 'professor' ? 'aovivo' : role === 'monitor' ? 'moderacao' : (s.accepted && s.oriented ? 'aula' : 'login');
+    this.setState({ role, screen, projecao: false, dialog: null });
+  }
+  enviar() {
+    const s = this.state; const texto = s.draft.trim();
+    if (!texto || texto.length > 500 || s.aula === 'fechada') return;
+    const hit = s.termos.find((t) => texto.toLowerCase().includes(t));
+    const d = mk({ id: s.nextId, ord: s.nextOrd, texto, anon: s.anon, autor: s.anon ? null : 'Leonardo Marino', mine: true, hora: s.aula === 'pos' ? '05/11 10:12' : '19:4' + (s.nextId % 10), pos: s.aula === 'pos', status: hit ? 'PENDENTE' : 'PUBLICADA', fila: !s.online });
+    this.setState({ duvidas: [...s.duvidas, d], nextId: s.nextId + 1, nextOrd: s.nextOrd + 1, draft: '', anon: true });
+    this.say(!s.online ? 'Sem conexão. A dúvida ficou salva no aparelho e segue quando a conexão voltar.' : hit ? 'Recebida. Ela passa pela moderação antes de aparecer para a turma.' : 'Enviada. Sua dúvida já está na lista da aula.');
+  }
+  toggleOnline() {
+    const s = this.state; const online = !s.online;
+    const queued = s.duvidas.filter((d) => d.fila).length;
+    this.setState({ online, duvidas: online ? s.duvidas.map((d) => ({ ...d, fila: false })) : s.duvidas });
+    if (online && queued) this.say(queued + (queued > 1 ? ' dúvidas enviadas' : ' dúvida enviada') + ' ao reconectar.');
+  }
+  responder(k, label) { const t = this.state.termo; const r = { ...t.resp }; r[k]++; this.setState({ termo: { ...t, resp: r, minha: label }, termoRespHist: this.state.termoRespHist + 1 }); }
+  entrarTurma() {
+    const c = this.state.codigo.trim().toUpperCase();
+    if (this.state.turmas.some((t) => t.codigo === c)) { this.setState({ screen: 'aula', codigo: '', codigoMsg: '' }); this.say('Você entrou em Estruturas de Dados · Aula 12.'); }
+    else this.setState({ codigoMsg: c.length < 6 ? 'O código tem 6 caracteres.' : 'Código não encontrado. Confira com o professor.' });
+  }
+  finishOnb() { const s = this.state; this.setState({ oriented: true, screen: s.helpMode ? 'aula' : 'entrar', helpMode: false, onb: 0 }); }
+
+  renderVals() {
+    const s = this.state;
+    const mobile = (this.props.dispositivo ?? 'desktop') === 'celular';
+    const est = s.role === 'estudante', prof = s.role === 'professor', mon = s.role === 'monitor';
+    const onbScreens = ['login', 'termo', 'orientacao'];
+    const showNav = !(est && onbScreens.includes(s.screen));
+    const visiveis = s.duvidas.filter((d) => d.status === 'PUBLICADA');
+    const pendentes = s.duvidas.filter((d) => d.status === 'PENDENTE');
+    const prazoLabel = PRAZOS[s.prazo];
+    const aulaTag = s.aula === 'aberta' ? 'Aula aberta' : s.aula === 'pos' ? 'Pós-aula até ' + prazoLabel : 'Encerrada';
+    const autorLabel = (d) => d.mine ? (d.anon ? 'Enviada como anônima' : 'Enviada com seu nome') : (d.anon ? 'Anônima' : d.autor);
+    const autorProf = (d) => (d.anon ? 'Anônima' : d.autor);
+
+    const navDefs = est ? [['aula', 'Aula ao vivo', 'ph ph-chalkboard-teacher'], ['historico', 'Meu histórico', 'ph ph-clock-counter-clockwise'], ['entrar', 'Entrar em turma', 'ph ph-key'], ['ajuda', 'Ajuda', 'ph ph-question']]
+      : prof ? [['turmas', 'Turmas e aulas', 'ph ph-users-three'], ['aovivo', 'Aula ao vivo', 'ph ph-broadcast'], ['painel', 'Painel por tema', 'ph ph-kanban'], ['moderacao', 'Moderação', 'ph ph-shield-check'], ['resumo', 'Resumo', 'ph ph-file-text']]
+      : [['moderacao', 'Moderação', 'ph ph-shield-check']];
+    const navItems = navDefs.map(([k, label, icon]) => {
+      const cur = s.screen === k || (k === 'ajuda' && s.screen === 'orientacao');
+      const badge = k === 'moderacao' && pendentes.length ? String(pendentes.length) : '';
+      return { label, icon, current: cur ? 'page' : 'false', color: cur ? 'var(--color-accent-300)' : 'var(--color-neutral-300)', bg: cur ? 'color-mix(in srgb, var(--color-accent) 12%, transparent)' : 'transparent', hasBadge: !!badge, badge,
+        go: () => (k === 'ajuda' ? this.setState({ screen: 'orientacao', onb: 0, helpMode: true }) : this.go(k)) };
+    });
+
+    const listaEst = s.duvidas.filter((d) => d.status === 'PUBLICADA' || (d.mine && d.status === 'PENDENTE')).sort(sortD).map((d) => ({
+      texto: d.texto, hora: d.hora, apoios: d.apoios, mine: d.mine, notMine: !d.mine, autorLabel: autorLabel(d), respondida: d.respondida, pos: d.pos, fila: d.fila,
+      pendente: d.status === 'PENDENTE', apoiada: d.apoiada, naoApoiada: !d.apoiada, bloq: d.mine || d.fila, op: d.respondida ? 0.6 : 1,
+      aria: (d.apoiada ? 'Desfazer apoio. ' : 'Apoiar esta dúvida. ') + d.apoios + ' apoios',
+      toggle: () => this.upd(d.id, (x) => ({ apoiada: !x.apoiada, apoios: x.apoios + (x.apoiada ? -1 : 1) })),
+    }));
+    const listaProf = [...visiveis].sort(sortD).map((d) => ({
+      texto: d.texto, hora: d.hora, apoios: d.apoios, autorLabel: autorProf(d), tema: d.tema, temTema: !!d.tema, pos: d.pos, respondida: d.respondida, naoRespondida: !d.respondida, op: d.respondida ? 0.6 : 1,
+      toggleResp: () => this.upd(d.id, (x) => ({ respondida: !x.respondida })),
+    }));
+    const temaOpts = [{ v: '', l: 'Sem tema' }, ...s.temas.map((t) => ({ v: t, l: t }))];
+    const groups = [...s.temas, ''].map((t) => {
+      const items = visiveis.filter((d) => d.tema === t).sort(sortD);
+      const ap = items.reduce((a, d) => a + d.apoios, 0);
+      return { nome: t || 'Sem tema', resumo: items.length + (items.length === 1 ? ' dúvida' : ' dúvidas') + ' · ' + ap + ' apoios', items, vazio: !items.length };
+    });
+    const colunas = groups.map((g) => ({ ...g, items: g.items.map((d) => ({ texto: d.texto, apoios: d.apoios, pos: d.pos, respondida: d.respondida, tema: d.tema, aria: 'Mover dúvida para outro tema',
+      mover: (e) => { const v = e.target.value; this.upd(d.id, () => ({ tema: v })); this.say('Dúvida movida para ' + (v || 'Sem tema') + '.'); } })) }));
+
+    const t = s.termo; const tr = t.resp; const tTot = tr.e + tr.p + tr.n;
+    const minhas = s.duvidas.filter((d) => d.mine).map((d) => ({ texto: d.texto, hora: d.hora, apoios: d.apoios, autorLabel: autorLabel(d) }));
+    const totApoios = visiveis.reduce((a, d) => a + d.apoios, 0);
+    const ocultas = s.duvidas.filter((d) => d.status === 'OCULTA').length;
+    const envioAberto = s.aula !== 'fechada';
+
+    return {
+      fw: mobile ? '390px' : '100%', fh: mobile ? '820px' : 'auto', fm: mobile ? '24px auto' : '0', fr: mobile ? '28px' : '0', fs: mobile ? 'var(--shadow-lg)' : 'none', ft: mobile ? 'translateZ(0)' : 'none', fmin: mobile ? '0' : '100vh',
+      layoutDir: mobile ? 'column' : 'row', navDir: mobile ? 'row' : 'column', navW: mobile ? '100%' : '210px', mainMax: '1040px',
+      isEst: est, isProf: prof, isMon: mon,
+      toEst: () => this.setRole('estudante'), toProf: () => this.setRole('professor'), toMon: () => this.setRole('monitor'),
+      netDot: s.online ? 'var(--color-accent)' : 'var(--color-neutral-600)', netLabel: s.online ? 'Online' : 'Offline', toggleOnline: () => this.toggleOnline(), offline: !s.online,
+      showNav, navItems, logout: () => this.setState({ screen: 'login' }),
+      sLogin: est && s.screen === 'login', sTermo: est && s.screen === 'termo', sOrient: est && s.screen === 'orientacao', sEntrar: est && s.screen === 'entrar',
+      sAula: est && s.screen === 'aula', sHist: est && s.screen === 'historico',
+      sTurmas: prof && s.screen === 'turmas', sAoVivo: prof && s.screen === 'aovivo', sPainel: prof && s.screen === 'painel', sMod: (prof || mon) && s.screen === 'moderacao', sResumo: prof && s.screen === 'resumo',
+      authEntrar: s.authTab === 'entrar', authCad: s.authTab === 'cad', toEntrarTab: () => this.setState({ authTab: 'entrar' }), toCadTab: () => this.setState({ authTab: 'cad' }),
+      authCta: s.authTab === 'entrar' ? 'Entrar' : 'Criar conta',
+      doLogin: () => this.setState({ screen: !s.accepted ? 'termo' : !s.oriented ? 'orientacao' : 'entrar' }),
+      termoLido: s.termoLido, termoBloq: !s.termoLido, toggleTermoLido: () => this.setState({ termoLido: !s.termoLido }),
+      aceitar: () => this.setState({ accepted: true, screen: 'orientacao', onb: 0 }),
+      onbNum: s.onb + 1, onb0: s.onb === 0, onb1: s.onb === 1, onb2: s.onb === 2, onbHasBack: s.onb > 0,
+      onbDots: [0, 1, 2].map((i) => ({ bg: i <= s.onb ? 'var(--color-accent)' : 'var(--color-neutral-800)' })),
+      onbCta: s.onb === 2 ? (s.helpMode ? 'Voltar para a aula' : 'Começar') : 'Próximo',
+      onbNext: () => (s.onb === 2 ? this.finishOnb() : this.setState({ onb: s.onb + 1 })), onbBack: () => this.setState({ onb: s.onb - 1 }), onbSkip: () => this.finishOnb(),
+      codigo: s.codigo, codigoMsg: s.codigoMsg, onCodigo: (e) => this.setState({ codigo: e.target.value.toUpperCase(), codigoMsg: '' }), entrarTurma: () => this.entrarTurma(),
+      aulaTag, prazoLabel, isAberta: s.aula === 'aberta', isPos: s.aula === 'pos', isFechada: s.aula === 'fechada',
+      envioAberto, envioFechado: !envioAberto,
+      draft: s.draft, onDraft: (e) => this.setState({ draft: e.target.value.slice(0, 500) }), contador: s.draft.length + ' / 500',
+      anon: s.anon, toggleAnon: () => this.setState({ anon: !s.anon }),
+      avisoModo: s.anon ? 'ANÔNIMA' : 'IDENTIFICADA', avisoIcon: s.anon ? 'ph ph-mask-happy' : 'ph ph-identification-badge',
+      avisoTexto: s.anon ? 'Ninguém verá seu nome, nem o professor.' : 'A turma e o professor verão seu nome: Leonardo Marino.',
+      envioBloq: !s.draft.trim(), enviar: () => this.enviar(), listaEst,
+      termoEstudante: t.ativo || (t.iniciado && !!t.minha && t.restante > 0), termoPodeResponder: t.ativo && !t.minha, termoRespondido: !!t.minha, minhaResp: t.minha || '',
+      termoTempo: fmt(Math.max(0, t.restante)), termoTempoProj: t.ativo ? fmt(t.restante) : 'Encerrado',
+      respE: () => this.responder('e', 'Entendi'), respP: () => this.responder('p', 'Entendi em parte'), respN: () => this.responder('n', 'Não entendi'),
+      histDuv: minhas.length, histApoios: s.duvidas.filter((d) => d.apoiada).length, histTermo: s.termoRespHist, minhas, semMinhas: !minhas.length,
+      abrirExcluir: () => this.setState({ dialog: 'excluir' }), dExcluir: s.dialog === 'excluir',
+      excluirTexto: 'Serão apagadas ' + minhas.length + (minhas.length === 1 ? ' dúvida' : ' dúvidas') + ' suas.',
+      confirmarExcluir: () => { this.setState((st) => ({ dialog: null, termoRespHist: 0, duvidas: st.duvidas.filter((d) => !d.mine).map((d) => (d.apoiada ? { ...d, apoiada: false, apoios: d.apoios - 1 } : d)) })); this.say('Suas contribuições foram excluídas.'); },
+      fecharDialog: () => this.setState({ dialog: null }),
+      turmas: s.turmas, abrirCriarTurma: () => this.setState({ dialog: 'criar', novaTurma: '' }), dCriar: s.dialog === 'criar',
+      novaTurma: s.novaTurma, onNovaTurma: (e) => this.setState({ novaTurma: e.target.value }),
+      criarTurma: () => { const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let c = ''; for (let i = 0; i < 6; i++) c += ch[Math.floor(Math.random() * ch.length)]; this.setState({ dialog: null, turmas: [...s.turmas, { nome: s.novaTurma || 'Nova turma', codigo: c, alunos: 0, fim: '12/12' }] }); this.say('Turma criada. Código ' + c + '.'); },
+      abrirEncerrar: () => this.setState({ dialog: 'encerrar' }), dEncerrar: s.dialog === 'encerrar',
+      p24: s.prazo === '24', p48: s.prazo === '48', pProx: s.prazo === 'prox', setP24: () => this.setState({ prazo: '24' }), setP48: () => this.setState({ prazo: '48' }), setPProx: () => this.setState({ prazo: 'prox' }),
+      encerrarAula: () => { this.setState({ dialog: null, aula: 'pos', termo: { ...s.termo, ativo: false } }); this.say('Aula encerrada. Dúvidas pós-aula abertas até ' + prazoLabel + '.'); },
+      fecharPrazo: () => { this.setState({ aula: 'fechada' }); this.say('Prazo encerrado. Resumo gerado e aviso enviado para o seu e-mail institucional.'); },
+      abrirAula: () => { this.setState({ aula: 'aberta' }); this.say('Aula aberta. Os estudantes já podem enviar dúvidas.'); },
+      goResumo: () => this.go('resumo'), goPainel: () => this.go('painel'),
+      termoAtivo: t.ativo, termoNaoAtivo: !t.ativo, termoNunca: !t.iniciado, termoTemDados: t.iniciado, termoBloq2: s.aula !== 'aberta',
+      termoDur: s.termoDur, onDur: (e) => this.setState({ termoDur: e.target.value }),
+      abrirTermo: () => { const dur = Math.max(10, parseInt(s.termoDur, 10) || 60); this.setState({ termo: { ativo: true, iniciado: true, restante: dur, resp: { e: 0, p: 0, n: 0 }, minha: null } }); },
+      fecharTermo: () => this.setState({ termo: { ...t, ativo: false, restante: 0 } }),
+      barras: bars(tr), termoResumo: tTot + ' de 32 estudantes responderam' + (t.ativo ? '' : ' · encerrado'),
+      projecao: s.projecao, abrirProj: () => this.setState({ projecao: true }), fecharProj: () => this.setState({ projecao: false }),
+      totDuv: visiveis.length, totApoios, totResp: 29 + tTot,
+      listaProf, colunas, temaOpts, novoTema: s.novoTema, onNovoTema: (e) => this.setState({ novoTema: e.target.value }),
+      addTema: () => { const n = s.novoTema.trim(); if (n && !s.temas.includes(n)) this.setState({ temas: [...s.temas, n], novoTema: '' }); },
+      modPerfil: mon ? 'Monitor' : 'Professor', pendCount: pendentes.length, semPend: !pendentes.length,
+      pendentes: pendentes.map((d) => ({ texto: d.texto, hora: d.hora, autorLabel: autorProf(d), termo: s.termos.find((x) => d.texto.toLowerCase().includes(x)) || 'lista',
+        aprovar: () => { this.upd(d.id, () => ({ status: 'PUBLICADA' })); this.say('Dúvida publicada para a turma.'); }, ocultar: () => { this.upd(d.id, () => ({ status: 'OCULTA' })); this.say('Dúvida ocultada.'); } })),
+      publicadas: [...visiveis].sort(sortD).slice(0, 6).map((d) => ({ texto: d.texto, autorLabel: autorProf(d), ocultar: () => { this.upd(d.id, () => ({ status: 'OCULTA' })); this.say('Dúvida ocultada da turma.'); } })),
+      temOcultas: ocultas > 0, ocultasLabel: ocultas + (ocultas === 1 ? ' dúvida ocultada' : ' dúvidas ocultadas') + ' nesta aula.',
+      termosList: s.termos.map((x) => ({ t: x, aria: 'Remover termo ' + x, rm: () => this.setState({ termos: s.termos.filter((y) => y !== x) }) })),
+      novoTermo: s.novoTermo, onNovoTermo: (e) => this.setState({ novoTermo: e.target.value }),
+      addTermo: () => { const n = s.novoTermo.trim().toLowerCase(); if (n && !s.termos.includes(n)) this.setState({ termos: [...s.termos, n], novoTermo: '' }); },
+      imprimir: () => window.print(),
+      resumoIcon: s.aula === 'fechada' ? 'ph ph-envelope-simple' : 'ph ph-hourglass-medium',
+      resumoStatus: s.aula === 'fechada' ? 'Gerado ao fim do prazo (' + prazoLabel + '). O aviso foi enviado ao seu e-mail institucional só com o link deste resumo.' : 'Prévia. O resumo final é gerado automaticamente quando o prazo pós-aula terminar' + (s.aula === 'pos' ? ' (' + prazoLabel + ')' : '') + ', e você recebe o aviso por e-mail.',
+      posCount: visiveis.filter((d) => d.pos).length,
+      resumoTemas: groups.filter((g) => !g.vazio).map((g) => ({ nome: g.nome, resumo: g.resumo, items: g.items.map((d) => ({ texto: d.texto, apoios: d.apoios, flags: [d.respondida ? '· respondida' : '', d.pos ? '· pós-aula' : ''].join(' ') })) })),
+      resumoTermos: [{ titulo: 'Termômetro 1 · 19:18 · 29 respostas', barras: bars({ e: 14, p: 10, n: 5 }) }].concat(t.iniciado && tTot ? [{ titulo: 'Termômetro 2 · ' + tTot + ' respostas', barras: bars(tr) }] : []),
+      hasToast: !!s.toast, toast: s.toast || '',
+    };
+  }
+}
+</script>
+</body>
+</html>
