@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class DuvidaService {
@@ -19,11 +21,14 @@ public class DuvidaService {
     private final DuvidaRepository duvidaRepository;
     private final DuvidaMapper duvidaMapper;
     private final AulaService aulaService;
+    private final ApoioService apoioService;
 
-    public DuvidaService(DuvidaRepository duvidaRepository, DuvidaMapper duvidaMapper, AulaService aulaService) {
+    public DuvidaService(DuvidaRepository duvidaRepository, DuvidaMapper duvidaMapper, AulaService aulaService,
+                          ApoioService apoioService) {
         this.duvidaRepository = duvidaRepository;
         this.duvidaMapper = duvidaMapper;
         this.aulaService = aulaService;
+        this.apoioService = apoioService;
     }
 
     public Duvida enviar(Long aulaId, String textoBruto, boolean anonima, Usuario estudante) {
@@ -43,9 +48,15 @@ public class DuvidaService {
     }
 
     public List<DuvidaDTO> listarVisiveis(Aula aula, Usuario usuarioLogado) {
-        return duvidaRepository.findByAulaIdOrderByRespondidaAscCriadaEmAsc(aula.getId()).stream()
+        List<Duvida> visiveis = duvidaRepository.findByAulaIdOrderByRespondidaAscCriadaEmAsc(aula.getId()).stream()
                 .filter(duvida -> visivelPara(duvida, usuarioLogado))
-                .map(duvida -> duvidaMapper.toDTO(duvida, usuarioLogado))
+                .toList();
+        List<Long> ids = visiveis.stream().map(Duvida::getId).toList();
+        Map<Long, Integer> totais = apoioService.contarPorDuvida(ids);
+        Set<Long> apoiadas = apoioService.apoiadasPor(usuarioLogado, ids);
+        return visiveis.stream()
+                .map(duvida -> duvidaMapper.toDTO(duvida, usuarioLogado,
+                        totais.getOrDefault(duvida.getId(), 0), apoiadas.contains(duvida.getId())))
                 .toList();
     }
 
