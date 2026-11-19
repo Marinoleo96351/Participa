@@ -2,6 +2,7 @@ package br.edu.utfpr.participa.aula;
 
 import br.edu.utfpr.participa.turma.Turma;
 import br.edu.utfpr.participa.turma.TurmaService;
+import br.edu.utfpr.participa.usuario.Perfil;
 import br.edu.utfpr.participa.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,24 @@ public class AulaService {
                     .atTime(23, 59).atZone(FUSO_PADRAO).toInstant();
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Opção de prazo inválida.");
         };
+    }
+
+    public Aula buscarEVerificarAcesso(Long aulaId, Usuario usuario) {
+        Aula aula = aulaRepository.findById(aulaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aula não encontrada."));
+        verificarAcesso(aula, usuario);
+        return aula;
+    }
+
+    private void verificarAcesso(Aula aula, Usuario usuario) {
+        boolean temAcesso = switch (usuario.getPerfil()) {
+            case PROFESSOR -> aula.getTurma().getProfessor().getId().equals(usuario.getId());
+            case ESTUDANTE -> turmaService.estaMatriculado(aula.getTurma().getId(), usuario.getId());
+            case MONITOR -> false;
+        };
+        if (!temAcesso) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem acesso a esta aula.");
+        }
     }
 
     public Optional<Aula> aulaAtual(Usuario usuario) {

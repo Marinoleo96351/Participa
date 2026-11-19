@@ -77,6 +77,10 @@ public class TurmaService {
         return (int) matriculaRepository.countById_TurmaId(turma.getId());
     }
 
+    public boolean estaMatriculado(Long turmaId, Long usuarioId) {
+        return matriculaRepository.existsById_TurmaIdAndId_UsuarioId(turmaId, usuarioId);
+    }
+
     public Turma buscarDoProfessor(Long turmaId, Usuario professor) {
         return turmaRepository.findByIdAndProfessorId(turmaId, professor.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Turma não encontrada."));
