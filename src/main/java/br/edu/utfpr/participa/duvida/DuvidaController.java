@@ -27,6 +27,6 @@ public class DuvidaController {
     DuvidaDTO enviar(@PathVariable Long aulaId, @RequestBody EnviarDuvidaRequest requisicao,
                       @AuthenticationPrincipal ParticipaUserDetails principal) {
         Duvida duvida = duvidaService.enviar(aulaId, requisicao.texto(), requisicao.anonima(), principal.getUsuario());
-        return duvidaMapper.toDTO(duvida, principal.getUsuario());
+        return duvidaMapper.toDTO(duvida, principal.getUsuario(), 0, false);
     }
 }

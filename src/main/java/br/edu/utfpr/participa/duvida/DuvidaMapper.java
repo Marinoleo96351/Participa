@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DuvidaMapper {
 
-    public DuvidaDTO toDTO(Duvida duvida, Usuario usuarioLogado) {
+    public DuvidaDTO toDTO(Duvida duvida, Usuario usuarioLogado, int apoios, boolean apoiadaPorMim) {
         boolean minha = duvida.getAutor().getId().equals(usuarioLogado.getId());
         return new DuvidaDTO(
                 duvida.getId(),
@@ -15,8 +15,8 @@ public class DuvidaMapper {
                 duvida.isAnonima(),
                 duvida.isAnonima() ? null : duvida.getAutor().getNome(),
                 minha,
-                0,
-                false,
+                apoios,
+                apoiadaPorMim,
                 duvida.isRespondida(),
                 null,
                 duvida.isPosAula(),
