@@ -10,6 +10,7 @@ import br.edu.utfpr.participa.turma.TurmaRepository;
 import br.edu.utfpr.participa.usuario.Perfil;
 import br.edu.utfpr.participa.usuario.Usuario;
 import br.edu.utfpr.participa.usuario.UsuarioRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -25,7 +26,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -126,6 +129,38 @@ class DuvidaApiTests {
                 .andExpect(status().isNotModified());
     }
 
+    @Test
+    void envioEmPosAulaDentroDoPrazo_eAceitoEMarcadoComoPosAula() throws Exception {
+        Aula aula = criarAulaPosAula(Instant.now().plus(1, ChronoUnit.HOURS));
+        Usuario estudante = matricular(aula.getTurma(), "estudante4@alunos.utfpr.edu.br");
+        MockHttpSession sessao = logarComo(estudante);
+
+        enviarDuvida(aula, sessao, "Dúvida enviada depois da aula.", false)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.posAula").value(true));
+    }
+
+    @Test
+    void envioEmPosAulaDepoisDoPrazo_eRecusadoCom409EMensagemComAData() throws Exception {
+        Aula aula = criarAulaPosAula(Instant.now().minus(1, ChronoUnit.HOURS));
+        Usuario estudante = matricular(aula.getTurma(), "estudante5@alunos.utfpr.edu.br");
+        MockHttpSession sessao = logarComo(estudante);
+
+        enviarDuvida(aula, sessao, "Dúvida tardia.", false)
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.erro", Matchers.containsString("terminou em")));
+    }
+
+    @Test
+    void envioComAulaEncerrada_eRecusadoCom409() throws Exception {
+        Aula aula = criarAulaEncerrada();
+        Usuario estudante = matricular(aula.getTurma(), "estudante6@alunos.utfpr.edu.br");
+        MockHttpSession sessao = logarComo(estudante);
+
+        enviarDuvida(aula, sessao, "Dúvida depois do fim.", false)
+                .andExpect(status().isConflict());
+    }
+
     private ResultActions enviarDuvida(
             Aula aula, MockHttpSession sessao, String texto, boolean anonima) throws Exception {
         String corpo = objectMapper.writeValueAsString(new EnviarDuvidaTeste(texto, anonima));
@@ -135,12 +170,26 @@ class DuvidaApiTests {
     }
 
     private Aula criarAulaAberta() {
+        return criarAulaComSituacao(SituacaoAula.ABERTA);
+    }
+
+    private Aula criarAulaPosAula(Instant prazo) {
+        Aula aula = criarAulaComSituacao(SituacaoAula.ABERTA);
+        aula.encerrar(prazo, Instant.now());
+        return aulaRepository.save(aula);
+    }
+
+    private Aula criarAulaEncerrada() {
+        return criarAulaComSituacao(SituacaoAula.ENCERRADA);
+    }
+
+    private Aula criarAulaComSituacao(SituacaoAula situacao) {
         Usuario professor = usuarioRepository.save(new Usuario(
                 "Professora", "professora" + System.nanoTime() + "@utfpr.edu.br",
                 passwordEncoder.encode(SENHA), Perfil.PROFESSOR));
         Turma turma = turmaRepository.save(new Turma(
                 "Turma de teste", codigoUnico(), professor, LocalDate.now().plusMonths(1)));
-        return aulaRepository.save(new Aula(turma, 1, "Aula de teste", LocalDate.now(), SituacaoAula.ABERTA));
+        return aulaRepository.save(new Aula(turma, 1, "Aula de teste", LocalDate.now(), situacao));
     }
 
     private String codigoUnico() {
