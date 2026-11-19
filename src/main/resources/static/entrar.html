@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161826">
+  <title>Entrar na turma — Participa</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <script defer src="/js/ui.js"></script>
+  <script type="module" src="/js/entrar-turma.js"></script>
+</head>
+<body>
+  <main class="access-page access-page-wide">
+    <header class="access-heading">
+      <h6 class="access-kicker">Entrar na turma</h6>
+      <h1>Digite o código que o professor mostrou.</h1>
+      <p class="text-muted">São 6 letras e números. Também dá para abrir o endereço da tela do professor, como participa.app/entrar?codigo=K7M2QX.</p>
+    </header>
+
+    <form id="form-entrar-turma" class="access-form">
+      <div class="field">
+        <label for="codigo-turma">Código da turma</label>
+        <input class="input entry-code" id="codigo-turma" name="codigo" type="text" inputmode="text" maxlength="6" autocomplete="off" autocapitalize="characters" aria-describedby="erro-codigo" required>
+      </div>
+      <p id="erro-codigo" class="form-error" aria-live="polite" hidden></p>
+      <p id="status-entrada" class="form-success" role="status" aria-live="polite"></p>
+      <button id="enviar-codigo" class="btn btn-primary btn-block access-submit" type="submit">Entrar na aula</button>
+    </form>
+    <p class="access-back"><a href="/">Voltar ao Participa</a></p>
+  </main>
+</body>
+</html>

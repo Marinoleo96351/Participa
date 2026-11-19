@@ -126,3 +126,80 @@ body {
   .app-content { width: 100%; padding-top: var(--space-4); }
   .app-toast { left: var(--space-4); bottom: var(--space-4); }
 }
+
+/* Fluxos de acesso e páginas da etapa base-acesso-telas */
+.access-page {
+  display: grid;
+  gap: var(--space-6);
+  width: min(400px, calc(100% - 32px));
+  margin-inline: auto;
+  padding: var(--space-8) 0 var(--space-8);
+}
+.access-page-wide { width: min(440px, calc(100% - 32px)); }
+.access-heading { display: grid; gap: var(--space-3); }
+.access-heading h1 { font-size: 32px; margin: 0; }
+.access-heading-title { margin: 0; font-size: 25px; }
+.access-heading p { margin: 0; font-size: 15px; line-height: 1.55; }
+.access-kicker { color: var(--color-accent-300); margin: 0; }
+.access-tabs { justify-self: start; }
+.access-form { display: grid; gap: var(--space-4); }
+.access-form .field { margin: 0; }
+.access-form [hidden] { display: none; }
+.access-profile { border: 0; padding: 0; min-width: 0; }
+.access-profile legend { font-size: 12px; margin-bottom: 5px; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+.access-hint { margin: 0; font-size: 12px; line-height: 1.45; }
+.access-submit { min-height: 44px; margin-top: 0; }
+.access-back { margin: 0; font-size: 13px; }
+.entry-code {
+  min-height: 56px;
+  font-size: 28px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.form-error { margin: calc(var(--space-2) * -1) 0 0; color: var(--color-accent-300); font-size: 13px; }
+.form-success { margin: 0; color: var(--color-accent-300); font-size: 14px; }
+
+.teacher-page { display: grid; gap: var(--space-6); }
+.teacher-titlebar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.teacher-titlebar h1 { margin: 0; font-size: 25px; }
+.teacher-kicker { margin: 0 0 var(--space-2); font-size: 13px; }
+.teacher-title-action { flex: none; min-height: 44px; }
+.teacher-message { margin: 0; }
+.teacher-message:empty { display: none; }
+.teacher-turma-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--space-4); }
+.teacher-turma-card { min-width: 0; gap: var(--space-3); box-shadow: var(--shadow-sm); }
+.teacher-turma-card[aria-current="true"] { box-shadow: inset 0 0 0 1px var(--color-accent); }
+.teacher-turma-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.teacher-turma-head .card-title { margin: 0; }
+.teacher-turma-kicker { color: var(--color-neutral-400); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.teacher-code-label { margin: 0; font-size: 11px; color: var(--color-neutral-400); }
+.teacher-code { color: var(--color-accent-300); font-size: 26px; letter-spacing: 0.18em; font-variant-numeric: tabular-nums; }
+.teacher-card-link { overflow-wrap: anywhere; font-size: 12px; }
+.teacher-select { align-self: flex-start; min-height: 40px; }
+.teacher-lessons { display: grid; gap: var(--space-3); }
+.teacher-lessons h2 { margin: 0; font-size: 20px; }
+.teacher-table-wrap { width: 100%; overflow-x: auto; border-radius: var(--radius-md); }
+.teacher-table { min-width: 600px; width: 100%; }
+.teacher-table td:last-child, .teacher-table th:last-child { text-align: right; }
+.teacher-row-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
+.teacher-row-actions .btn { min-height: 40px; }
+.teacher-empty { margin: 0; padding: var(--space-6); border: 1px dashed color-mix(in srgb, var(--color-text) 16%, transparent); border-radius: var(--radius-md); color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.teacher-dialog-form { display: grid; gap: var(--space-4); }
+.teacher-dialog-form .field { margin: 0; }
+.teacher-dialog-note { margin: 0; font-size: 13px; line-height: 1.5; }
+.teacher-dialog .seg { display: flex; flex-wrap: wrap; }
+.teacher-dialog .seg-opt { min-height: 40px; }
+.teacher-date-preview { margin: 0; color: var(--color-accent-300); font-size: 13px; }
+.teacher-aula-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-4); }
+.teacher-aula-title { display: grid; gap: var(--space-3); }
+.teacher-aula-title h1 { margin: 0; font-size: 25px; }
+.teacher-aula-meta { margin: 0; color: color-mix(in srgb, var(--color-text) 55%, transparent); font-size: 13px; }
+.teacher-aula-actions { display: flex; align-items: center; gap: var(--space-3); }
+.teacher-aula-placeholder { min-height: 200px; }
+@media (max-width: 720px) {
+  .access-page { padding-top: var(--space-6); }
+  .teacher-titlebar, .teacher-aula-head { grid-template-columns: 1fr; display: grid; align-items: start; }
+  .teacher-title-action { justify-self: start; }
+  .teacher-aula-actions { flex-wrap: wrap; }
+}
