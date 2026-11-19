@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/*.html", "/pages/**", "/css/**", "/js/**", "/fonts/**", "/icons/**").permitAll()
+                        .requestMatchers("/", "/*.html", "/pages/**", "/professor/**", "/css/**", "/js/**", "/fonts/**", "/icons/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/cadastro", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/turmas/entrar").hasRole("ESTUDANTE")
                         .requestMatchers(HttpMethod.POST, "/api/aulas/*/duvidas").hasRole("ESTUDANTE")

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161826">
+  <title>Entrar — Participa</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <script defer src="/js/ui.js"></script>
+  <script type="module" src="/js/acesso.js"></script>
+</head>
+<body>
+  <main class="access-page">
+    <header class="access-heading">
+      <h6 class="access-kicker">Base de acesso</h6>
+      <h1 id="titulo-acesso">Participe da aula sem se expor.</h1>
+      <p id="texto-acesso" class="text-muted">Funciona no navegador do celular ou do computador. Nada para instalar.</p>
+    </header>
+
+    <div class="seg access-tabs" role="radiogroup" aria-label="Escolha entre entrar e criar conta">
+      <label class="seg-opt"><input id="modo-entrar-radio" type="radio" name="modo" value="entrar" checked><span>Entrar</span></label>
+      <label class="seg-opt"><input type="radio" name="modo" value="cadastro"><span>Criar conta</span></label>
+    </div>
+
+    <form id="form-acesso" class="access-form">
+      <div id="campo-nome" class="field" hidden>
+        <label for="nome">Nome completo</label>
+        <input class="input" id="nome" name="nome" type="text" autocomplete="name" maxlength="120" required>
+      </div>
+
+      <fieldset id="campo-perfil" class="field access-profile" hidden>
+        <legend>Perfil</legend>
+        <div class="seg" role="radiogroup" aria-label="Perfil da conta">
+          <label class="seg-opt"><input type="radio" name="perfil" value="ESTUDANTE" checked><span>Estudante</span></label>
+          <label class="seg-opt"><input type="radio" name="perfil" value="PROFESSOR"><span>Professor</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <label for="email">E-mail institucional</label>
+        <input class="input" id="email" name="email" type="email" autocomplete="username" maxlength="160" required>
+      </div>
+
+      <div class="field">
+        <label for="senha">Senha</label>
+        <input class="input" id="senha" name="senha" type="password" autocomplete="current-password" minlength="8" required>
+      </div>
+
+      <p class="access-hint text-muted">Estudante: e-mail @alunos.utfpr.edu.br. Professor: e-mail @utfpr.edu.br.</p>
+      <p id="erro-acesso" class="form-error" role="alert" aria-live="assertive" hidden></p>
+      <button id="enviar-acesso" class="btn btn-primary btn-block access-submit" type="submit">Entrar</button>
+    </form>
+
+    <p class="access-hint text-muted">O perfil Monitor é atribuído pelo professor e não aparece no cadastro.</p>
+  </main>
+</body>
+</html>

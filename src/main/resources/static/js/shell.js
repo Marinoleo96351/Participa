@@ -5,13 +5,13 @@
     estudante: [
       { pagina: "aula", rotulo: "Aula ao vivo", icone: "broadcast", href: "/pages/estudante/aula.html" },
       { pagina: "historico", rotulo: "Meu histórico", icone: "clock-counter-clockwise", href: "/pages/estudante/historico.html" },
-      { pagina: "entrar-turma", rotulo: "Entrar em turma", icone: "users-three", href: "/pages/estudante/entrar-turma.html" },
+      { pagina: "entrar-turma", rotulo: "Entrar em turma", icone: "users-three", href: "/entrar.html" },
       { pagina: "ajuda", rotulo: "Ajuda", icone: "question", href: "/pages/estudante/ajuda.html" },
-      { pagina: "sair", rotulo: "Sair", icone: "sign-out", href: "/pages/acesso.html" }
+      { pagina: "sair", rotulo: "Sair", icone: "sign-out", href: "/login.html", acao: "sair" }
     ],
     professor: [
-      { pagina: "turmas", rotulo: "Turmas e aulas", icone: "chalkboard-teacher", href: "/pages/professor/turmas.html" },
-      { pagina: "aula", rotulo: "Aula ao vivo", icone: "broadcast", href: "/pages/professor/aula.html" },
+      { pagina: "turmas", rotulo: "Turmas e aulas", icone: "chalkboard-teacher", href: "/professor/turmas.html" },
+      { pagina: "aula", rotulo: "Aula ao vivo", icone: "broadcast", href: "/professor/aula.html" },
       { pagina: "painel", rotulo: "Painel por tema", icone: "kanban", href: "/pages/professor/painel.html" },
       { pagina: "moderacao", rotulo: "Moderação", icone: "shield-check", href: "/pages/professor/moderacao.html" },
       { pagina: "resumo", rotulo: "Resumo", icone: "file-text", href: "/pages/professor/resumo.html" }
@@ -33,6 +33,7 @@
   function linkMenu(item, paginaAtual) {
     const link = elemento("a", "app-nav-link");
     link.href = item.href;
+    if (item.acao) link.dataset.acao = item.acao;
     if (item.pagina === paginaAtual) link.setAttribute("aria-current", "page");
     link.append(window.ParticipaIcones.criar(item.icone, { classe: "app-nav-icon" }));
     link.append(elemento("span", "", item.rotulo));
@@ -77,6 +78,7 @@
     titulo.id = "titulo-pagina";
     main.append(titulo);
     const bloco = elemento("section", "app-empty-block");
+    bloco.dataset.shellPlaceholder = "";
     bloco.setAttribute("aria-label", "Área reservada para a etapa de desenvolvimento desta tela.");
     main.append(bloco);
 
@@ -87,8 +89,25 @@
 
   function iniciar() {
     document.querySelectorAll("[data-participa-shell]").forEach(renderizar);
+    resolvePronto();
   }
 
-  window.ParticipaShell = Object.freeze({ iniciar, renderizar, menus });
+  let resolvePronto;
+  const pronto = new Promise((resolve) => { resolvePronto = resolve; });
+  window.ParticipaShell = Object.freeze({ iniciar, renderizar, menus, pronto });
   iniciar();
+
+  document.addEventListener("click", async (evento) => {
+    const link = evento.target.closest("[data-acao='sair']");
+    if (!link) return;
+    evento.preventDefault();
+    link.setAttribute("aria-disabled", "true");
+    try {
+      await window.ParticipaAPI.requisitar("/api/auth/sair", { method: "POST" });
+      window.location.assign("/login.html");
+    } catch (erro) {
+      if (window.ParticipaUI) window.ParticipaUI.mostrarToast(erro.message);
+      link.removeAttribute("aria-disabled");
+    }
+  });
 })();
