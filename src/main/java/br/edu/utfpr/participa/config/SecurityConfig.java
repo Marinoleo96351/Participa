@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/*.html", "/pages/**", "/css/**", "/js/**", "/fonts/**", "/icons/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/cadastro", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/turmas/entrar").hasRole("ESTUDANTE")
+                        .requestMatchers(HttpMethod.POST, "/api/aulas/*/duvidas").hasRole("ESTUDANTE")
                         .requestMatchers("/api/professor/**").hasRole("PROFESSOR")
                         .requestMatchers("/api/moderacao/**").hasAnyRole("PROFESSOR", "MONITOR")
                         .anyRequest().authenticated())
