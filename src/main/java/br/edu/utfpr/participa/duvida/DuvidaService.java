@@ -2,13 +2,15 @@ package br.edu.utfpr.participa.duvida;
 
 import br.edu.utfpr.participa.aula.Aula;
 import br.edu.utfpr.participa.aula.AulaService;
-import br.edu.utfpr.participa.aula.SituacaoAula;
 import br.edu.utfpr.participa.duvida.dto.DuvidaDTO;
 import br.edu.utfpr.participa.usuario.Usuario;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +19,8 @@ import java.util.Set;
 public class DuvidaService {
 
     private static final int TAMANHO_MAXIMO_TEXTO = 500;
+    private static final ZoneId FUSO_PADRAO = ZoneId.of("America/Sao_Paulo");
+    private static final DateTimeFormatter FORMATO_PRAZO = DateTimeFormatter.ofPattern("dd/MM 'às' HH:mm");
 
     private final DuvidaRepository duvidaRepository;
     private final DuvidaMapper duvidaMapper;
@@ -40,11 +44,28 @@ public class DuvidaService {
         if (texto.length() > TAMANHO_MAXIMO_TEXTO) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O texto da dúvida pode ter até 500 caracteres.");
         }
-        if (aula.getSituacao() != SituacaoAula.ABERTA) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "O envio de dúvidas para esta aula está encerrado.");
-        }
-        Duvida duvida = new Duvida(aula, estudante, anonima, texto, StatusDuvida.PUBLICADA, false);
+        boolean posAula = verificarSituacaoEDeterminarPosAula(aula);
+        Duvida duvida = new Duvida(aula, estudante, anonima, texto, StatusDuvida.PUBLICADA, posAula);
         return duvidaRepository.save(duvida);
+    }
+
+    private boolean verificarSituacaoEDeterminarPosAula(Aula aula) {
+        return switch (aula.getSituacao()) {
+            case ABERTA -> false;
+            case POS_AULA -> {
+                if (!Instant.now().isBefore(aula.getPrazoPosAula())) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT,
+                            "O envio de dúvidas desta aula terminou em " + formatarPrazo(aula.getPrazoPosAula()) + ".");
+                }
+                yield true;
+            }
+            case ENCERRADA -> throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "O envio de dúvidas para esta aula está encerrado.");
+        };
+    }
+
+    private String formatarPrazo(Instant prazo) {
+        return FORMATO_PRAZO.format(prazo.atZone(FUSO_PADRAO));
     }
 
     public List<DuvidaDTO> listarVisiveis(Aula aula, Usuario usuarioLogado) {
