@@ -2,9 +2,11 @@ package br.edu.utfpr.participa.duvida;
 
 import br.edu.utfpr.participa.duvida.dto.DuvidaDTO;
 import br.edu.utfpr.participa.duvida.dto.EnviarDuvidaRequest;
+import br.edu.utfpr.participa.duvida.dto.MarcarRespondidaRequest;
 import br.edu.utfpr.participa.usuario.ParticipaUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,5 +30,11 @@ public class DuvidaController {
                       @AuthenticationPrincipal ParticipaUserDetails principal) {
         Duvida duvida = duvidaService.enviar(aulaId, requisicao.texto(), requisicao.anonima(), principal.getUsuario());
         return duvidaMapper.toDTO(duvida, principal.getUsuario(), 0, false);
+    }
+
+    @PatchMapping("/api/professor/duvidas/{duvidaId}/respondida")
+    DuvidaDTO marcarRespondida(@PathVariable Long duvidaId, @RequestBody MarcarRespondidaRequest requisicao,
+                               @AuthenticationPrincipal ParticipaUserDetails principal) {
+        return duvidaService.marcarRespondida(duvidaId, requisicao.respondida(), principal.getUsuario());
     }
 }

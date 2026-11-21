@@ -103,6 +103,10 @@ public class Duvida {
         return respondida;
     }
 
+    public void marcarRespondida(boolean respondida) {
+        this.respondida = respondida;
+    }
+
     public Instant getCriadaEm() {
         return criadaEm;
     }
