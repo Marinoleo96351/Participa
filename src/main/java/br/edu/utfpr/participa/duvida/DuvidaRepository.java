@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface DuvidaRepository extends JpaRepository<Duvida, Long> {
 
-    List<Duvida> findByAulaIdOrderByRespondidaAscCriadaEmAsc(Long aulaId);
+    List<Duvida> findByAulaId(Long aulaId);
 }

@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,16 +70,32 @@ public class DuvidaService {
     }
 
     public List<DuvidaDTO> listarVisiveis(Aula aula, Usuario usuarioLogado) {
-        List<Duvida> visiveis = duvidaRepository.findByAulaIdOrderByRespondidaAscCriadaEmAsc(aula.getId()).stream()
+        List<Duvida> visiveis = duvidaRepository.findByAulaId(aula.getId()).stream()
                 .filter(duvida -> visivelPara(duvida, usuarioLogado))
                 .toList();
         List<Long> ids = visiveis.stream().map(Duvida::getId).toList();
         Map<Long, Integer> totais = apoioService.contarPorDuvida(ids);
         Set<Long> apoiadas = apoioService.apoiadasPor(usuarioLogado, ids);
+        Comparator<Duvida> ordenacao = Comparator.comparing(Duvida::isRespondida)
+                .thenComparing(Comparator.comparing((Duvida d) -> totais.getOrDefault(d.getId(), 0)).reversed())
+                .thenComparing(Duvida::getCriadaEm);
         return visiveis.stream()
+                .sorted(ordenacao)
                 .map(duvida -> duvidaMapper.toDTO(duvida, usuarioLogado,
                         totais.getOrDefault(duvida.getId(), 0), apoiadas.contains(duvida.getId())))
                 .toList();
+    }
+
+    public DuvidaDTO marcarRespondida(Long duvidaId, boolean respondida, Usuario professor) {
+        Duvida duvida = duvidaRepository.findById(duvidaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Dúvida não encontrada."));
+        if (!duvida.getAula().getTurma().getProfessor().getId().equals(professor.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem acesso a esta dúvida.");
+        }
+        duvida.marcarRespondida(respondida);
+        duvidaRepository.save(duvida);
+        int apoios = apoioService.contarPorDuvida(List.of(duvidaId)).getOrDefault(duvidaId, 0);
+        return duvidaMapper.toDTO(duvida, professor, apoios, false);
     }
 
     private boolean visivelPara(Duvida duvida, Usuario usuario) {
