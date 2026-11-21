@@ -32,6 +32,7 @@ import java.time.temporal.ChronoUnit;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,6 +62,12 @@ class DuvidaApiTests {
 
     @Autowired
     private AulaRepository aulaRepository;
+
+    @Autowired
+    private DuvidaRepository duvidaRepository;
+
+    @Autowired
+    private ApoioRepository apoioRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -161,6 +168,118 @@ class DuvidaApiTests {
                 .andExpect(status().isConflict());
     }
 
+    @Test
+    void duvidaComMaisApoios_apareceAntesNaLista() throws Exception {
+        Aula aula = criarAulaAberta();
+        Usuario autor = matricular(aula.getTurma(), "autor9@alunos.utfpr.edu.br");
+        Duvida poucoApoio = criarDuvida(aula, autor, "Dúvida com pouco apoio.");
+        Duvida muitoApoio = criarDuvida(aula, autor, "Dúvida com muito apoio.");
+        apoiar(muitoApoio, 2);
+        apoiar(poucoApoio, 1);
+
+        MockHttpSession sessao = logarComo(aula.getTurma().getProfessor());
+        mockMvc.perform(get("/api/aulas/" + aula.getId() + "/estado").session(sessao))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.duvidas[0].texto").value(muitoApoio.getTexto()))
+                .andExpect(jsonPath("$.duvidas[1].texto").value(poucoApoio.getTexto()));
+    }
+
+    @Test
+    void empateDeApoios_colocaAMaisAntigaPrimeiro() throws Exception {
+        Aula aula = criarAulaAberta();
+        Usuario autor = matricular(aula.getTurma(), "autor10@alunos.utfpr.edu.br");
+        Duvida antiga = criarDuvida(aula, autor, "Dúvida mais antiga.");
+        Thread.sleep(5);
+        Duvida nova = criarDuvida(aula, autor, "Dúvida mais nova.");
+        apoiar(antiga, 1);
+        apoiar(nova, 1);
+
+        MockHttpSession sessao = logarComo(aula.getTurma().getProfessor());
+        mockMvc.perform(get("/api/aulas/" + aula.getId() + "/estado").session(sessao))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.duvidas[0].texto").value(antiga.getTexto()))
+                .andExpect(jsonPath("$.duvidas[1].texto").value(nova.getTexto()));
+    }
+
+    @Test
+    void duvidaRespondida_vaiParaOFimDaLista() throws Exception {
+        Aula aula = criarAulaAberta();
+        Usuario autor = matricular(aula.getTurma(), "autor11@alunos.utfpr.edu.br");
+        Duvida respondidaComMaisApoio = criarDuvida(aula, autor, "Dúvida respondida com mais apoio.");
+        Duvida pendenteComMenosApoio = criarDuvida(aula, autor, "Dúvida pendente com menos apoio.");
+        apoiar(respondidaComMaisApoio, 3);
+        apoiar(pendenteComMenosApoio, 1);
+        respondidaComMaisApoio.marcarRespondida(true);
+        duvidaRepository.save(respondidaComMaisApoio);
+
+        MockHttpSession sessao = logarComo(aula.getTurma().getProfessor());
+        mockMvc.perform(get("/api/aulas/" + aula.getId() + "/estado").session(sessao))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.duvidas[0].texto").value(pendenteComMenosApoio.getTexto()))
+                .andExpect(jsonPath("$.duvidas[1].texto").value(respondidaComMaisApoio.getTexto()));
+    }
+
+    @Test
+    void professorMarcaEDesmarcaRespondida() throws Exception {
+        Aula aula = criarAulaAberta();
+        Usuario autor = matricular(aula.getTurma(), "autor12@alunos.utfpr.edu.br");
+        Duvida duvida = criarDuvida(aula, autor, "Dúvida para marcar.");
+        MockHttpSession sessao = logarComo(aula.getTurma().getProfessor());
+
+        marcarRespondida(duvida, sessao, true)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.respondida").value(true));
+
+        marcarRespondida(duvida, sessao, false)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.respondida").value(false));
+    }
+
+    @Test
+    void estudanteRecebe403AoMarcarRespondida() throws Exception {
+        Aula aula = criarAulaAberta();
+        Usuario autor = matricular(aula.getTurma(), "autor13@alunos.utfpr.edu.br");
+        Duvida duvida = criarDuvida(aula, autor, "Dúvida qualquer.");
+        MockHttpSession sessao = logarComo(autor);
+
+        marcarRespondida(duvida, sessao, true)
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void professorDeOutraTurma_recebe403AoMarcarRespondida() throws Exception {
+        Aula aula = criarAulaAberta();
+        Usuario autor = matricular(aula.getTurma(), "autor14@alunos.utfpr.edu.br");
+        Duvida duvida = criarDuvida(aula, autor, "Dúvida de outra turma.");
+        Usuario professorDeFora = usuarioRepository.save(new Usuario(
+                "Outro Professor", "outroprofessor" + System.nanoTime() + "@utfpr.edu.br",
+                passwordEncoder.encode(SENHA), Perfil.PROFESSOR));
+        MockHttpSession sessao = logarComo(professorDeFora);
+
+        marcarRespondida(duvida, sessao, true)
+                .andExpect(status().isForbidden());
+    }
+
+    private ResultActions marcarRespondida(Duvida duvida, MockHttpSession sessao, boolean respondida) throws Exception {
+        String corpo = objectMapper.writeValueAsString(new MarcarRespondidaTeste(respondida));
+        return mockMvc.perform(patch("/api/professor/duvidas/" + duvida.getId() + "/respondida")
+                .session(sessao).with(csrf())
+                .contentType(MediaType.APPLICATION_JSON).content(corpo));
+    }
+
+    private Duvida criarDuvida(Aula aula, Usuario autor, String texto) {
+        return duvidaRepository.save(new Duvida(aula, autor, false, texto, StatusDuvida.PUBLICADA, false));
+    }
+
+    private void apoiar(Duvida duvida, int quantidade) {
+        for (int i = 0; i < quantidade; i++) {
+            Usuario apoiador = usuarioRepository.save(new Usuario(
+                    "Apoiador", "apoiador" + System.nanoTime() + "@alunos.utfpr.edu.br",
+                    passwordEncoder.encode(SENHA), Perfil.ESTUDANTE));
+            apoioRepository.save(new Apoio(duvida, apoiador));
+        }
+    }
+
     private ResultActions enviarDuvida(
             Aula aula, MockHttpSession sessao, String texto, boolean anonima) throws Exception {
         String corpo = objectMapper.writeValueAsString(new EnviarDuvidaTeste(texto, anonima));
@@ -217,5 +336,8 @@ class DuvidaApiTests {
     }
 
     private record LoginTeste(String email, String senha) {
+    }
+
+    private record MarcarRespondidaTeste(boolean respondida) {
     }
 }
