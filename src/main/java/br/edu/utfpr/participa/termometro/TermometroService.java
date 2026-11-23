@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.edu.utfpr.participa.aula.Aula;
+import br.edu.utfpr.participa.termometro.dto.ResultadoTermometroDTO;
+import br.edu.utfpr.participa.turma.MatriculaRepository;
 import br.edu.utfpr.participa.usuario.Usuario;
 
 @Service
@@ -15,11 +17,14 @@ public class TermometroService {
 
     private final TermometroRepository termometros;
     private final RespostaTermometroRepository respostas;
+    private final MatriculaRepository matriculas;
 
     public TermometroService(TermometroRepository termometros,
-                             RespostaTermometroRepository respostas) {
+                             RespostaTermometroRepository respostas,
+                             MatriculaRepository matriculas) {
         this.termometros = termometros;
         this.respostas = respostas;
+        this.matriculas = matriculas;
     }
 
     @Transactional
@@ -65,6 +70,28 @@ public class TermometroService {
         }
 
         respostas.save(new RespostaTermometro(t, usuario, opcao));
+    }
+
+    @Transactional(readOnly = true)
+    public ResultadoTermometroDTO resultado(Termometro t) {
+        long entendi = 0;
+        long parcial = 0;
+        long naoEntendi = 0;
+
+        for (var contagem : respostas.contarPorOpcao(t.getId())) {
+            switch (contagem.getOpcao()) {
+                case ENTENDI -> entendi = contagem.getTotal();
+                case PARCIAL -> parcial = contagem.getTotal();
+                case NAO_ENTENDI -> naoEntendi = contagem.getTotal();
+            }
+        }
+
+        long matriculados = matriculas.countById_TurmaId(t.getAula().getTurma().getId());
+
+        return new ResultadoTermometroDTO(
+                entendi, parcial, naoEntendi,
+                entendi + parcial + naoEntendi,
+                matriculados);
     }
 
     private Termometro buscar(Long id) {
