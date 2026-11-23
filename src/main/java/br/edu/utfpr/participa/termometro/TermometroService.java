@@ -8,14 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.edu.utfpr.participa.aula.Aula;
+import br.edu.utfpr.participa.usuario.Usuario;
 
 @Service
 public class TermometroService {
 
     private final TermometroRepository termometros;
+    private final RespostaTermometroRepository respostas;
 
-    public TermometroService(TermometroRepository termometros) {
+    public TermometroService(TermometroRepository termometros,
+                             RespostaTermometroRepository respostas) {
         this.termometros = termometros;
+        this.respostas = respostas;
     }
 
     @Transactional
@@ -38,14 +42,34 @@ public class TermometroService {
 
     @Transactional
     public Termometro encerrar(Long termometroId) {
-        Termometro t = termometros.findById(termometroId).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Termômetro não encontrado."));
+        Termometro t = buscar(termometroId);
 
         Instant agora = Instant.now();
         if (t.estaAberto(agora)) {
             t.encerrar(agora);
         }
         return t;
+    }
+
+    @Transactional
+    public void responder(Long termometroId, Usuario usuario, OpcaoResposta opcao) {
+        Termometro t = buscar(termometroId);
+
+        if (!t.estaAberto(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Este termômetro já foi encerrado.");
+        }
+        if (respostas.existsById_TermometroIdAndId_UsuarioId(termometroId, usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Você já respondeu a este termômetro.");
+        }
+
+        respostas.save(new RespostaTermometro(t, usuario, opcao));
+    }
+
+    private Termometro buscar(Long id) {
+        return termometros.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Termômetro não encontrado."));
     }
 }
