@@ -156,6 +156,8 @@ async function iniciar() {
     const reservada = elemento("section", "app-empty-block teacher-aula-placeholder");
     reservada.setAttribute("aria-label", "Área da aula ao vivo, desenvolvida em outra etapa");
     pagina.append(cabecalho, reservada);
+    window.ParticipaAulaAtual = aula;
+    document.dispatchEvent(new CustomEvent("participa:aula-carregada", { detail: { aula } }));
   } catch (falha) {
     aviso.textContent = falha.message || "Não foi possível carregar os dados da aula.";
     aviso.hidden = false;
