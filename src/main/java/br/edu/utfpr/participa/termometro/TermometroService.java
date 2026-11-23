@@ -1,6 +1,7 @@
 package br.edu.utfpr.participa.termometro;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -92,6 +93,39 @@ public class TermometroService {
                 entendi, parcial, naoEntendi,
                 entendi + parcial + naoEntendi,
                 matriculados);
+    }
+
+    @Transactional(readOnly = true)
+    public Termometro buscarDoProfessor(Long termometroId, Usuario professor) {
+        Termometro t = buscar(termometroId);
+        Long donoId = t.getAula().getTurma().getProfessor().getId();
+        if (!donoId.equals(professor.getId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Termômetro não encontrado.");
+        }
+        return t;
+    }
+
+    @Transactional(readOnly = true)
+    public void verificarMatricula(Long termometroId, Usuario estudante) {
+        Termometro t = buscar(termometroId);
+        Long turmaId = t.getAula().getTurma().getId();
+        if (!matriculas.existsById_TurmaIdAndId_UsuarioId(turmaId, estudante.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Você não tem acesso a esta aula.");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Termometro> listarDaAula(Long aulaId) {
+        return termometros.findByAula_IdOrderByNumeroAsc(aulaId);
+    }
+
+    @Transactional(readOnly = true)
+    public OpcaoResposta minhaResposta(Long termometroId, Long usuarioId) {
+        return respostas.findById_TermometroIdAndId_UsuarioId(termometroId, usuarioId)
+                .map(RespostaTermometro::getOpcao)
+                .orElse(null);
     }
 
     private Termometro buscar(Long id) {
