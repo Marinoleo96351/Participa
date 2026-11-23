@@ -2,6 +2,7 @@ package br.edu.utfpr.participa.termometro;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -119,6 +120,11 @@ public class TermometroService {
     @Transactional(readOnly = true)
     public List<Termometro> listarDaAula(Long aulaId) {
         return termometros.findByAula_IdOrderByNumeroAsc(aulaId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Termometro> ultimoDaAula(Long aulaId) {
+        return termometros.findFirstByAula_IdOrderByNumeroDesc(aulaId);
     }
 
     @Transactional(readOnly = true)
