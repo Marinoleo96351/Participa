@@ -147,7 +147,7 @@ async function iniciar() {
 
       const codigoLabel = elemento("p", "teacher-code-label", "Código");
       const codigo = elemento("strong", "teacher-code", turma.codigo);
-      const link = elemento("a", "teacher-card-link card-meta", `participa.app/entrar.html?codigo=${turma.codigo}`);
+      const link = elemento("a", "teacher-card-link card-meta", `${window.location.host}/entrar.html?codigo=${turma.codigo}`);
       link.href = `/entrar.html?codigo=${encodeURIComponent(turma.codigo)}`;
       link.setAttribute("aria-label", `Link para estudantes entrarem na turma ${turma.nome}`);
       const selecionar = elemento("button", "btn btn-secondary teacher-select", turmaSelecionada?.id === turma.id ? "Turma selecionada" : "Ver aulas");
