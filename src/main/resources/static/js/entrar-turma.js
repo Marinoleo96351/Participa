@@ -55,7 +55,7 @@ aoCarregar(async () => {
       const aula = await api("GET", "/api/eu/aula-atual");
       if (aula && aula.turmaId === turma.id) {
         sessionStorage.removeItem("participa.destinoAposLogin");
-        window.location.assign(`/aula.html?aulaId=${encodeURIComponent(aula.id)}`);
+        window.location.assign(`/pages/estudante/aula.html?aulaId=${encodeURIComponent(aula.id)}`);
         return;
       }
       status.textContent = `Você entrou em ${turma.nome}. A aula aparecerá aqui quando o professor abrir uma.`;

@@ -176,20 +176,18 @@ body {
 .teacher-code-label { margin: 0; font-size: 11px; color: var(--color-neutral-400); }
 .teacher-code { color: var(--color-accent-300); font-size: 26px; letter-spacing: 0.18em; font-variant-numeric: tabular-nums; }
 .teacher-card-link { overflow-wrap: anywhere; font-size: 12px; }
-.teacher-select { align-self: flex-start; min-height: 40px; }
+.teacher-select { align-self: flex-start; }
 .teacher-lessons { display: grid; gap: var(--space-3); }
 .teacher-lessons h2 { margin: 0; font-size: 20px; }
 .teacher-table-wrap { width: 100%; overflow-x: auto; border-radius: var(--radius-md); }
 .teacher-table { min-width: 600px; width: 100%; }
 .teacher-table td:last-child, .teacher-table th:last-child { text-align: right; }
 .teacher-row-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
-.teacher-row-actions .btn { min-height: 40px; }
 .teacher-empty { margin: 0; padding: var(--space-6); border: 1px dashed color-mix(in srgb, var(--color-text) 16%, transparent); border-radius: var(--radius-md); color: color-mix(in srgb, var(--color-text) 55%, transparent); }
 .teacher-dialog-form { display: grid; gap: var(--space-4); }
 .teacher-dialog-form .field { margin: 0; }
 .teacher-dialog-note { margin: 0; font-size: 13px; line-height: 1.5; }
 .teacher-dialog .seg { display: flex; flex-wrap: wrap; }
-.teacher-dialog .seg-opt { min-height: 40px; }
 .teacher-date-preview { margin: 0; color: var(--color-accent-300); font-size: 13px; }
 .teacher-aula-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-4); }
 .teacher-aula-title { display: grid; gap: var(--space-3); }

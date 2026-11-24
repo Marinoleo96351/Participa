@@ -36,7 +36,7 @@ export async function abrirDestinoDoUsuario(usuario, { pularPaginasProvisorias =
 
   const aula = await api("GET", "/api/eu/aula-atual");
   if (aula) {
-    window.location.assign(`/aula.html?aulaId=${encodeURIComponent(aula.id)}`);
+    window.location.assign(`/pages/estudante/aula.html?aulaId=${encodeURIComponent(aula.id)}`);
   } else {
     window.location.assign("/entrar.html");
   }
