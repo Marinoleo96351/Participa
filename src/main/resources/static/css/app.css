@@ -203,3 +203,40 @@ body {
   .teacher-title-action { justify-self: start; }
   .teacher-aula-actions { flex-wrap: wrap; }
 }
+
+/* US16: aviso de sem conexão e dúvidas da aula do estudante */
+.duvidas-raiz { display: grid; gap: var(--space-4); margin-bottom: var(--space-6); }
+.duvidas-banner {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: 8.4px 11.2px; border-radius: var(--radius-md);
+  background: var(--color-surface); box-shadow: var(--shadow-sm); font-size: 13px;
+}
+.duvidas-banner .icon { flex: none; width: 20px; height: 20px; color: var(--color-accent); }
+.duvidas-field { display: grid; gap: var(--space-2); }
+.duvidas-prazo-aviso { margin: 0; color: var(--color-accent-300); font-size: 13px; }
+.duvidas-anonimo-linha { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.duvidas-anonimo-opcao { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: 14px; }
+.duvidas-contador { font-size: 12px; font-variant-numeric: tabular-nums; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.duvidas-aviso-anonimato {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: 8.4px 11.2px; border-radius: var(--radius-md);
+  background: var(--color-accent-900); color: var(--color-accent-100); font-size: 13px;
+}
+.duvidas-aviso-anonimato .icon { flex: none; width: 20px; height: 20px; }
+.duvidas-aviso-anonimato strong { letter-spacing: 0.04em; }
+.duvidas-encerrada { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); padding: var(--space-4) 0; text-align: center; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.duvidas-encerrada .icon { width: 28px; height: 28px; }
+.duvidas-lista-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.duvidas-lista-head h4 { margin: 0; }
+.duvidas-lista { display: grid; margin: 0; padding: 0; list-style: none; }
+.duvidas-item { display: flex; align-items: flex-start; gap: 11.2px; padding: 11.2px 0; border-bottom: 1px solid var(--color-divider); }
+.duvidas-item:last-child { border-bottom: 0; }
+.duvidas-item--respondida { opacity: 0.6; }
+.duvidas-item-corpo { flex: 1; min-width: 0; display: grid; gap: 4px; }
+.duvidas-item-texto { margin: 0; font-size: 15px; text-wrap: pretty; }
+.duvidas-item-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 12px; color: var(--color-neutral-400); }
+.duvidas-item-apoio { flex: none; min-width: 84px; min-height: 44px; }
+.duvidas-vazia { margin: 0; padding: var(--space-4) 0; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+@media (max-width: 720px) {
+  .duvidas-anonimo-linha { flex-wrap: wrap; }
+}

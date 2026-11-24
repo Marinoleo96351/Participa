@@ -9,7 +9,7 @@
     let executando = false;
 
     async function executar() {
-      if (executando || document.hidden) return;
+      if (executando || document.hidden || !navigator.onLine) return;
       executando = true;
       try {
         await tarefa();
@@ -24,12 +24,14 @@
       if (temporizador !== null) return;
       if (imediato) void executar();
       temporizador = window.setInterval(executar, intervaloMs);
+      window.addEventListener("online", executar);
     }
 
     function parar() {
       if (temporizador === null) return;
       window.clearInterval(temporizador);
       temporizador = null;
+      window.removeEventListener("online", executar);
     }
 
     return Object.freeze({ iniciar, parar, executar, ativo: () => temporizador !== null });

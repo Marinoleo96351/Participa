@@ -2,4 +2,5 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/participa_test
 spring.datasource.username=postgres
 spring.datasource.password=
 
+spring.flyway.out-of-order=true
 spring.flyway.locations=classpath:db/migration
